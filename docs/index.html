@@ -3,126 +3,765 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>세금 계산기</title>
+    <title>부동산 보유세 계산기 - 상세 산출과정 제공</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; background-color: #f4f7f6; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,00,0,0.1); }
-        .calculator-selector { margin-bottom: 20px; }
-        .calculator-selector label { font-weight: bold; margin-right: 10px; }
-        .calculator-selector select { padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 1em; }
-        .calculator {
-            /* display: none; */ /* JS로 제어 */
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --border-color: #e2e8f0;
+            --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         }
-        .calculator.active { display: block; }
-        h2 { text-align: center; color: #333; }
-        label { font-weight: bold; margin-top: 15px; display: block; }
-        input[type="range"], input[type="text"] { width: 100%; margin-top: 10px; padding: 10px; box-sizing: border-box; }
-        .result-box { margin-top: 20px; padding: 15px; background: #eef2f5; border-radius: 8px; }
-        .total { font-size: 1.2em; font-weight: bold; color: #d9534f; }
-        hr { border: 0; border-top: 1px solid #ddd; margin: 20px 0; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 760px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 36px;
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header .badge {
+            display: inline-block;
+            background-color: #eff6ff;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            margin-bottom: 10px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .header p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        /* 컨트롤 영역 */
+        .control-group {
+            background-color: #f8fafc;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 28px;
+        }
+
+        .price-label-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .price-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-main);
+        }
+
+        .price-display {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .price-display .readable {
+            font-size: 1.05rem;
+            color: #475569;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #cbd5e1;
+            outline: none;
+            cursor: pointer;
+            accent-color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        /* Quick Preset Buttons */
+        .preset-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-btn:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .preset-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 결과 카드 스타일 */
+        .result-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .result-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .year-tag {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .tag-gray { background: #e2e8f0; color: #475569; }
+        .tag-blue { background: #dbeafe; color: #1e40af; }
+        .tag-purple { background: #f3e8ff; color: #6b21a8; }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 0.98rem;
+            color: #334155;
+        }
+
+        .summary-row.total-row {
+            border-top: 2px dashed #e2e8f0;
+            margin-top: 8px;
+            padding-top: 14px;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .summary-row .val {
+            font-weight: 600;
+        }
+
+        .summary-row.total-row .val {
+            color: var(--accent-red);
+            font-size: 1.25rem;
+        }
+
+        /* Collapsible details styling */
+        details {
+            margin-top: 14px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 12px;
+        }
+
+        summary {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            user-select: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        summary:hover {
+            background-color: #e0f2fe;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .breakdown-box {
+            margin-top: 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 0.88rem;
+        }
+
+        .breakdown-step {
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .breakdown-step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .step-num {
+            display: inline-block;
+            background: #cbd5e1;
+            color: #1e293b;
+            font-size: 0.75rem;
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .formula-text {
+            color: #64748b;
+            margin-top: 3px;
+            font-family: monospace, sans-serif;
+            font-size: 0.84rem;
+            line-height: 1.4;
+            background: #ffffff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            word-break: break-all;
+        }
+
+        .formula-text highlight {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .sub-calc {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .price-display {
+                font-size: 1.1rem;
+            }
+            .summary-row.total-row {
+                font-size: 1.05rem;
+            }
+            .summary-row.total-row .val {
+                font-size: 1.15rem;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="calculator-selector" style="display: none;">
-        <label for="taxType">계산기 선택:</label>
-        <select id="taxType">
-            <option value="propertyTax">보유세 (재산세/종부세)</option>
-            <!-- 나중에 다른 계산기 추가. 예: <option value="capitalGainsTax">양도소득세</option> -->
-        </select>
+    <div class="header">
+        <span class="badge">부부 공동명의 (50 : 50)</span>
+        <h1>부동산 보유세 계산기</h1>
+        <p>주택 공시가격에 따른 재산세 및 종부세의 상세 산출과정을 확인하세요.</p>
     </div>
-    <div id="propertyTaxCalculator" class="calculator active">
-      <h2>부동산 보유세 계산기<br><small>(부부 공동명의 50:50)</small></h2>
-      
-      <label for="priceSlider">주택 공시가격: <span id="priceLabel">2,500,000,000</span> 원</label>
-      <input type="range" id="priceSlider" min="1000000000" max="5000000000" step="10000000" value="2500000000">
-      
-      <div class="result-box">
-          <h3>공통 산출: 재산세</h3>
-          <p>총 재산세: <span id="propTax">0</span> 원</p>
-      </div>
-  
-      <div class="result-box">
-          <h3>2026년 (현행 유지)</h3>
-          <p>부부 합산 종부세: <span id="jongbu2026">0</span> 원</p>
-          <p class="total">2026년 총 보유세: <span id="total2026">0</span> 원</p>
-      </div>
-  
-      <div class="result-box">
-          <h3>2027~2028년 (세제개편안)</h3>
-          <p>부부 합산 종부세: <span id="jongbu2027">0</span> 원</p>
-          <p class="total">27~28년 총 보유세: <span id="total2027">0</span> 원</p>
-      </div>
+
+    <!-- 주택 공시가격 조절 컨트롤 -->
+    <div class="control-group">
+        <div class="price-label-wrapper">
+            <span class="price-title">주택 공시가격</span>
+            <div class="price-display">
+                <span id="priceLabelExact">2,500,000,000</span> 원
+                <span id="priceLabelReadable" class="readable">(25억원)</span>
+            </div>
+        </div>
+        
+        <input type="range" id="priceSlider" min="1000000000" max="5000000000" step="10000000" value="2500000000">
+
+        <div class="preset-buttons">
+            <button class="preset-btn" onclick="setPrice(1000000000)">10억</button>
+            <button class="preset-btn" onclick="setPrice(1500000000)">15억</button>
+            <button class="preset-btn" onclick="setPrice(2000000000)">20억</button>
+            <button class="preset-btn active" onclick="setPrice(2500000000)">25억</button>
+            <button class="preset-btn" onclick="setPrice(3000000000)">30억</button>
+            <button class="preset-btn" onclick="setPrice(4000000000)">40억</button>
+            <button class="preset-btn" onclick="setPrice(5000000000)">50억</button>
+        </div>
+    </div>
+
+    <!-- 1. 재산세 카드 -->
+    <div class="result-card">
+        <div class="card-header">
+            <div class="card-title">
+                <span>공통 산출: 재산세</span>
+            </div>
+            <span class="year-tag tag-gray">지방세</span>
+        </div>
+
+        <div class="summary-row total-row" style="border-top: none; padding-top: 0;">
+            <span>총 재산세 (지방교육세/도시지역분 포함)</span>
+            <span class="val" id="propTaxTotal" style="color: var(--primary);">0 원</span>
+        </div>
+
+        <details open>
+            <summary>🔍 재산세 상세 산출과정 보기</summary>
+            <div class="breakdown-box">
+                <div class="breakdown-step">
+                    <span class="step-num">1</span>
+                    <span class="step-title">과세표준 산출</span>
+                    <div class="formula-text">
+                        공시가격 (<span id="propStep1Price">0</span>) × 공정시가비율 45%<br>
+                        = 과세표준 <span id="propStep1Base" class="highlight">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">2</span>
+                    <span class="step-title">재산세 본세 (세율 0.4%, 누진공제 63만원)</span>
+                    <div class="formula-text">
+                        (과세표준 <span id="propStep2Base">0</span> × 0.4%) - 630,000원<br>
+                        = 재산세 본세 <span id="propStep2Main" class="highlight">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">3</span>
+                    <span class="step-title">부과 세목 (지방교육세 & 도시지역분)</span>
+                    <div class="formula-text">
+                        • 지방교육세 (본세의 20%): <span id="propStep3Edu">0 원</span><br>
+                        • 도시지역분 (과세표준의 0.14%): <span id="propStep3City">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">4</span>
+                    <span class="step-title">총 재산세 합계</span>
+                    <div class="formula-text">
+                        본세 (<span id="propStep4Main">0</span>) + 지방교육세 (<span id="propStep4Edu">0</span>) + 도시지역분 (<span id="propStep4City">0</span>)<br>
+                        = <span id="propStep4Total" class="highlight">0 원</span>
+                    </div>
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- 2. 2026년 보유세 카드 -->
+    <div class="result-card">
+        <div class="card-header">
+            <div class="card-title">
+                <span>2026년 보유세</span>
+            </div>
+            <span class="year-tag tag-blue">현행 유지</span>
+        </div>
+
+        <div class="summary-row">
+            <span>부부 합산 종부세</span>
+            <span class="val" id="jongbu2026">0 원</span>
+        </div>
+        <div class="summary-row total-row">
+            <span>2026년 총 보유세 (재산세 + 종부세)</span>
+            <span class="val" id="total2026">0 원</span>
+        </div>
+
+        <details>
+            <summary>🔍 2026년 종부세 상세 산출과정 보기</summary>
+            <div class="breakdown-box">
+                <div class="breakdown-step">
+                    <span class="step-num">1</span>
+                    <span class="step-title">1인당 공시가격 지분 & 기본공제</span>
+                    <div class="formula-text">
+                        공시가격 (<span id="j26Step1Price">0</span>) ÷ 2 = 1인당 <span id="j26Step1Share">0</span><br>
+                        기본공제 (1인당 9억원) 적용 후 과세대상 = <span id="j26Step1Target" class="highlight">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">2</span>
+                    <span class="step-title">1인당 과세표준 (공정시가비율 60%)</span>
+                    <div class="formula-text">
+                        과세대상 (<span id="j26Step2Target">0</span>) × 60%<br>
+                        = 과세표준 <span id="j26Step2Base" class="highlight">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">3</span>
+                    <span class="step-title">1인당 종부세 산출세액</span>
+                    <div class="formula-text">
+                        구간 적용: <span id="j26Step3TierInfo">3억원 이하 (세율 0.5%)</span><br>
+                        계산식: <span id="j26Step3Formula">(과세표준 × 0.5%)</span><br>
+                        = 1인당 세액 <span id="j26Step3PerPerson" class="highlight">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">4</span>
+                    <span class="step-title">부부 합산 종부세</span>
+                    <div class="formula-text">
+                        1인당 세액 (<span id="j26Step4PerPerson">0</span>) × 2명<br>
+                        = 부부 합산 종부세 <span id="j26Step4Total" class="highlight">0 원</span>
+                    </div>
+                </div>
+            </div>
+        </details>
+    </div>
+
+    <!-- 3. 2027~2028년 보유세 카드 -->
+    <div class="result-card">
+        <div class="card-header">
+            <div class="card-title">
+                <span>2027~2028년 보유세</span>
+            </div>
+            <span class="year-tag tag-purple">세제개편안</span>
+        </div>
+
+        <div class="summary-row">
+            <span>부부 합산 종부세</span>
+            <span class="val" id="jongbu2027">0 원</span>
+        </div>
+        <div class="summary-row total-row">
+            <span>27~28년 총 보유세 (재산세 + 종부세)</span>
+            <span class="val" id="total2027">0 원</span>
+        </div>
+
+        <details>
+            <summary>🔍 2027~2028년 종부세 상세 산출과정 보기</summary>
+            <div class="breakdown-box">
+                <div class="breakdown-step">
+                    <span class="step-num">1</span>
+                    <span class="step-title">1인당 공시가격 지분 & 기본공제</span>
+                    <div class="formula-text">
+                        공시가격 (<span id="j27Step1Price">0</span>) ÷ 2 = 1인당 <span id="j27Step1Share">0</span><br>
+                        기본공제 (1인당 9억원) 적용 후 과세대상 = <span id="j27Step1Target" class="highlight">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">2</span>
+                    <span class="step-title">1인당 과세표준 (공정시가비율 70%)</span>
+                    <div class="formula-text">
+                        과세대상 (<span id="j27Step2Target">0</span>) × 70%<br>
+                        = 과세표준 <span id="j27Step2Base" class="highlight">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">3</span>
+                    <span class="step-title">1인당 종부세 산출세액</span>
+                    <div class="formula-text">
+                        구간 적용: <span id="j27Step3TierInfo">3억원 이하 (세율 0.5%)</span><br>
+                        계산식: <span id="j27Step3Formula">(과세표준 × 0.5%)</span><br>
+                        = 1인당 세액 <span id="j27Step3PerPerson" class="highlight">0 원</span>
+                    </div>
+                </div>
+
+                <div class="breakdown-step">
+                    <span class="step-num">4</span>
+                    <span class="step-title">부부 합산 종부세</span>
+                    <div class="formula-text">
+                        1인당 세액 (<span id="j27Step4PerPerson">0</span>) × 2명<br>
+                        = 부부 합산 종부세 <span id="j27Step4Total" class="highlight">0 원</span>
+                    </div>
+                </div>
+            </div>
+        </details>
     </div>
 </div>
 
 <script>
-  // --- 상수 정의 (세율 등) ---
+  // --- 세율 및 설정 상수 ---
   const TAX_CONFIG = {
       property: {
-          baseRate: 0.45,
-          taxRate: 0.004,
-          deduction: 630000,
-          eduTaxRate: 0.2,
-          cityTaxRate: 0.0014,
+          baseRate: 0.45,       // 공정시가비율 45%
+          taxRate: 0.004,       // 본세 세율 0.4%
+          deduction: 630000,     // 누진공제액 63만원
+          eduTaxRate: 0.2,      // 지방교육세율 20%
+          cityTaxRate: 0.0014,  // 도시지역분 0.14%
       },
       jongbu: {
-          deduction: 900000000, // 1인당 공제액
-          rate2026: 0.6,
-          rate2027: 0.7,
+          deduction: 900000000, // 1인당 기본공제액 9억원
+          rate2026: 0.6,        // 2026 공정시가비율 60%
+          rate2027: 0.7,        // 2027 공정시가비율 70%
       }
   };
 
   // --- 유틸리티 함수 ---
-  const formatWon = (num) => Math.max(0, Math.round(num)).toLocaleString('ko-KR');
+  const formatWon = (num) => Math.max(0, Math.round(num)).toLocaleString('ko-KR') + ' 원';
 
-  // --- 계산 함수 ---
-  function calculatePropertyTax(price) {
-      const config = TAX_CONFIG.property;
-      const propBase = price * config.baseRate;
-      const mainPropTax = (propBase * config.taxRate) - config.deduction;
-      const eduTax = mainPropTax * config.eduTaxRate;
-      const cityTax = propBase * config.cityTaxRate;
-      return mainPropTax + eduTax + cityTax;
+  function formatKoreanText(num) {
+      if (num <= 0) return '0원';
+      const eok = Math.floor(num / 100000000);
+      const remainderAfterEok = num % 100000000;
+      const man = Math.floor(remainderAfterEok / 10000);
+      const won = Math.round(remainderAfterEok % 10000);
+
+      let result = '';
+      if (eok > 0) result += `${eok}억 `;
+      if (man > 0) result += `${man.toLocaleString()}만 `;
+      if (won > 0 && eok === 0) result += `${won.toLocaleString()}`;
+      
+      result = result.trim();
+      if (result.endsWith('억') || result.endsWith('만')) {
+          return result + '원';
+      }
+      return result ? result + '원' : '0원';
   }
 
-  function calculateJongbuTax(price, year) {
+  // --- 상세 계산 함수 ---
+  function calculatePropertyTaxDetails(price) {
+      const config = TAX_CONFIG.property;
+      const propBase = Math.round(price * config.baseRate);
+      const mainPropTax = Math.max(0, Math.round((propBase * config.taxRate) - config.deduction));
+      const eduTax = Math.round(mainPropTax * config.eduTaxRate);
+      const cityTax = Math.round(propBase * config.cityTaxRate);
+      const totalPropTax = mainPropTax + eduTax + cityTax;
+
+      return {
+          price,
+          propBase,
+          mainPropTax,
+          eduTax,
+          cityTax,
+          totalPropTax
+      };
+  }
+
+  function calculateJongbuTaxDetails(price, year) {
       const config = TAX_CONFIG.jongbu;
       const rate = (year === 2026) ? config.rate2026 : config.rate2027;
-      const base = Math.max(0, (price / 2 - config.deduction) * rate);
+      
+      const sharePrice = Math.round(price / 2);
+      const targetAmount = Math.max(0, Math.round(sharePrice - config.deduction));
+      const jongbuBase = Math.round(targetAmount * rate);
       
       let taxPerPerson = 0;
+      let tierInfo = "";
+      let formula = "";
+
       if (year === 2026) {
-          if (base <= 300000000) taxPerPerson = base * 0.005;
-          else if (base <= 600000000) taxPerPerson = (base * 0.007) - 600000;
-          else taxPerPerson = (base * 0.01) - 2400000;
-      } else { // 2027
-          if (base <= 300000000) taxPerPerson = base * 0.005;
-          else if (base <= 600000000) taxPerPerson = (base * 0.007) - 600000;
-          else taxPerPerson = (base * 0.013) - 4200000;
+          if (jongbuBase <= 0) {
+              tierInfo = "과세대상 없음 (공제 9억원 이하)";
+              formula = "0원";
+              taxPerPerson = 0;
+          } else if (jongbuBase <= 300000000) {
+              tierInfo = "3억원 이하 (세율 0.5%)";
+              formula = `(과세표준 ${formatKoreanText(jongbuBase)} × 0.5%)`;
+              taxPerPerson = Math.round(jongbuBase * 0.005);
+          } else if (jongbuBase <= 600000000) {
+              tierInfo = "3억 초과 ~ 6억원 이하 (세율 0.7%, 누진공제 60만원)";
+              formula = `(과세표준 ${formatKoreanText(jongbuBase)} × 0.7%) - 60만원`;
+              taxPerPerson = Math.round((jongbuBase * 0.007) - 600000);
+          } else {
+              tierInfo = "6억원 초과 (세율 1.0%, 누진공제 240만원)";
+              formula = `(과세표준 ${formatKoreanText(jongbuBase)} × 1.0%) - 240만원`;
+              taxPerPerson = Math.round((jongbuBase * 0.01) - 2400000);
+          }
+      } else { // 2027~2028 개편안
+          if (jongbuBase <= 0) {
+              tierInfo = "과세대상 없음 (공제 9억원 이하)";
+              formula = "0원";
+              taxPerPerson = 0;
+          } else if (jongbuBase <= 300000000) {
+              tierInfo = "3억원 이하 (세율 0.5%)";
+              formula = `(과세표준 ${formatKoreanText(jongbuBase)} × 0.5%)`;
+              taxPerPerson = Math.round(jongbuBase * 0.005);
+          } else if (jongbuBase <= 600000000) {
+              tierInfo = "3억 초과 ~ 6억원 이하 (세율 0.7%, 누진공제 60만원)";
+              formula = `(과세표준 ${formatKoreanText(jongbuBase)} × 0.7%) - 60만원`;
+              taxPerPerson = Math.round((jongbuBase * 0.007) - 600000);
+          } else {
+              tierInfo = "6억원 초과 (세율 1.3%, 누진공제 420만원)";
+              formula = `(과세표준 ${formatKoreanText(jongbuBase)} × 1.3%) - 420만원`;
+              taxPerPerson = Math.round((jongbuBase * 0.013) - 4200000);
+          }
       }
-      return taxPerPerson * 2; // 부부 2명 합산
+
+      taxPerPerson = Math.max(0, taxPerPerson);
+      const totalJongbu = taxPerPerson * 2;
+
+      return {
+          price,
+          sharePrice,
+          deduction: config.deduction,
+          targetAmount,
+          rate,
+          jongbuBase,
+          tierInfo,
+          formula,
+          taxPerPerson,
+          totalJongbu
+      };
+  }
+
+  // --- 빠른 설정 버튼 클릭 ---
+  function setPrice(value) {
+      const slider = document.getElementById('priceSlider');
+      slider.value = value;
+      updatePresetActive(value);
+      updatePropertyTaxUI();
+  }
+
+  function updatePresetActive(value) {
+      const buttons = document.querySelectorAll('.preset-btn');
+      buttons.forEach(btn => {
+          const btnVal = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
+          if (btnVal === parseInt(value)) {
+              btn.classList.add('active');
+          } else {
+              btn.classList.remove('active');
+          }
+      });
   }
 
   // --- UI 업데이트 함수 ---
   function updatePropertyTaxUI() {
       const price = parseInt(document.getElementById('priceSlider').value);
-      document.getElementById('priceLabel').innerText = formatWon(price);
+      
+      // 가격 표시
+      document.getElementById('priceLabelExact').innerText = Math.round(price).toLocaleString('ko-KR');
+      document.getElementById('priceLabelReadable').innerText = `(${formatKoreanText(price)})`;
+      updatePresetActive(price);
 
-      // 1. 재산세
-      const totalPropTax = calculatePropertyTax(price);
-      document.getElementById('propTax').innerText = formatWon(totalPropTax);
+      // 1. 재산세 상세 산출
+      const p = calculatePropertyTaxDetails(price);
+      document.getElementById('propTaxTotal').innerText = formatWon(p.totalPropTax);
 
-      // 2. 2026년 보유세
-      const totalJongbu2026 = calculateJongbuTax(price, 2026);
-      document.getElementById('jongbu2026').innerText = formatWon(totalJongbu2026);
-      document.getElementById('total2026').innerText = formatWon(totalPropTax + totalJongbu2026);
+      document.getElementById('propStep1Price').innerText = formatWon(p.price);
+      document.getElementById('propStep1Base').innerText = formatWon(p.propBase) + ` (${formatKoreanText(p.propBase)})`;
 
-      // 3. 2027-2028년 보유세
-      const totalJongbu2027 = calculateJongbuTax(price, 2027);
-      document.getElementById('jongbu2027').innerText = formatWon(totalJongbu2027);
-      document.getElementById('total2027').innerText = formatWon(totalPropTax + totalJongbu2027);
+      document.getElementById('propStep2Base').innerText = formatWon(p.propBase);
+      document.getElementById('propStep2Main').innerText = formatWon(p.mainPropTax) + ` (${formatKoreanText(p.mainPropTax)})`;
+
+      document.getElementById('propStep3Edu').innerText = formatWon(p.eduTax);
+      document.getElementById('propStep3City').innerText = formatWon(p.cityTax);
+
+      document.getElementById('propStep4Main').innerText = formatWon(p.mainPropTax);
+      document.getElementById('propStep4Edu').innerText = formatWon(p.eduTax);
+      document.getElementById('propStep4City').innerText = formatWon(p.cityTax);
+      document.getElementById('propStep4Total').innerText = formatWon(p.totalPropTax) + ` (${formatKoreanText(p.totalPropTax)})`;
+
+      // 2. 2026년 종부세 상세 산출
+      const j26 = calculateJongbuTaxDetails(price, 2026);
+      document.getElementById('jongbu2026').innerText = formatWon(j26.totalJongbu);
+      document.getElementById('total2026').innerText = formatWon(p.totalPropTax + j26.totalJongbu);
+
+      document.getElementById('j26Step1Price').innerText = formatWon(j26.price);
+      document.getElementById('j26Step1Share').innerText = formatWon(j26.sharePrice);
+      document.getElementById('j26Step1Target').innerText = formatWon(j26.targetAmount) + ` (${formatKoreanText(j26.targetAmount)})`;
+
+      document.getElementById('j26Step2Target').innerText = formatWon(j26.targetAmount);
+      document.getElementById('j26Step2Base').innerText = formatWon(j26.jongbuBase) + ` (${formatKoreanText(j26.jongbuBase)})`;
+
+      document.getElementById('j26Step3TierInfo').innerText = j26.tierInfo;
+      document.getElementById('j26Step3Formula').innerText = j26.formula;
+      document.getElementById('j26Step3PerPerson').innerText = formatWon(j26.taxPerPerson) + ` (${formatKoreanText(j26.taxPerPerson)})`;
+
+      document.getElementById('j26Step4PerPerson').innerText = formatWon(j26.taxPerPerson);
+      document.getElementById('j26Step4Total').innerText = formatWon(j26.totalJongbu) + ` (${formatKoreanText(j26.totalJongbu)})`;
+
+      // 3. 2027~2028년 종부세 상세 산출
+      const j27 = calculateJongbuTaxDetails(price, 2027);
+      document.getElementById('jongbu2027').innerText = formatWon(j27.totalJongbu);
+      document.getElementById('total2027').innerText = formatWon(p.totalPropTax + j27.totalJongbu);
+
+      document.getElementById('j27Step1Price').innerText = formatWon(j27.price);
+      document.getElementById('j27Step1Share').innerText = formatWon(j27.sharePrice);
+      document.getElementById('j27Step1Target').innerText = formatWon(j27.targetAmount) + ` (${formatKoreanText(j27.targetAmount)})`;
+
+      document.getElementById('j27Step2Target').innerText = formatWon(j27.targetAmount);
+      document.getElementById('j27Step2Base').innerText = formatWon(j27.jongbuBase) + ` (${formatKoreanText(j27.jongbuBase)})`;
+
+      document.getElementById('j27Step3TierInfo').innerText = j27.tierInfo;
+      document.getElementById('j27Step3Formula').innerText = j27.formula;
+      document.getElementById('j27Step3PerPerson').innerText = formatWon(j27.taxPerPerson) + ` (${formatKoreanText(j27.taxPerPerson)})`;
+
+      document.getElementById('j27Step4PerPerson').innerText = formatWon(j27.taxPerPerson);
+      document.getElementById('j27Step4Total').innerText = formatWon(j27.totalJongbu) + ` (${formatKoreanText(j27.totalJongbu)})`;
   }
 
   // --- 이벤트 리스너 설정 및 초기화 ---
@@ -134,7 +773,6 @@
       updatePropertyTaxUI();
   }
 
-  // 페이지 로드 완료 시 실행
   window.addEventListener('DOMContentLoaded', initialize);
 </script>
 
