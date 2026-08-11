@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>세금 계산기</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; background-color: #f4f7f6; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,00,0,0.1); }
+        .calculator-selector { margin-bottom: 20px; }
+        .calculator-selector label { font-weight: bold; margin-right: 10px; }
+        .calculator-selector select { padding: 8px; border-radius: 5px; border: 1px solid #ccc; font-size: 1em; }
+        .calculator {
+            /* display: none; */ /* JS로 제어 */
+        }
+        .calculator.active { display: block; }
+        h2 { text-align: center; color: #333; }
+        label { font-weight: bold; margin-top: 15px; display: block; }
+        input[type="range"], input[type="text"] { width: 100%; margin-top: 10px; padding: 10px; box-sizing: border-box; }
+        .result-box { margin-top: 20px; padding: 15px; background: #eef2f5; border-radius: 8px; }
+        .total { font-size: 1.2em; font-weight: bold; color: #d9534f; }
+        hr { border: 0; border-top: 1px solid #ddd; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="calculator-selector" style="display: none;">
+        <label for="taxType">계산기 선택:</label>
+        <select id="taxType">
+            <option value="propertyTax">보유세 (재산세/종부세)</option>
+            <!-- 나중에 다른 계산기 추가. 예: <option value="capitalGainsTax">양도소득세</option> -->
+        </select>
+    </div>
+    <div id="propertyTaxCalculator" class="calculator active">
+      <h2>부동산 보유세 계산기<br><small>(부부 공동명의 50:50)</small></h2>
+      
+      <label for="priceSlider">주택 공시가격: <span id="priceLabel">2,500,000,000</span> 원</label>
+      <input type="range" id="priceSlider" min="1000000000" max="5000000000" step="10000000" value="2500000000">
+      
+      <div class="result-box">
+          <h3>공통 산출: 재산세</h3>
+          <p>총 재산세: <span id="propTax">0</span> 원</p>
+      </div>
+  
+      <div class="result-box">
+          <h3>2026년 (현행 유지)</h3>
+          <p>부부 합산 종부세: <span id="jongbu2026">0</span> 원</p>
+          <p class="total">2026년 총 보유세: <span id="total2026">0</span> 원</p>
+      </div>
+  
+      <div class="result-box">
+          <h3>2027~2028년 (세제개편안)</h3>
+          <p>부부 합산 종부세: <span id="jongbu2027">0</span> 원</p>
+          <p class="total">27~28년 총 보유세: <span id="total2027">0</span> 원</p>
+      </div>
+    </div>
+</div>
+
+<script>
+  // --- 상수 정의 (세율 등) ---
+  const TAX_CONFIG = {
+      property: {
+          baseRate: 0.45,
+          taxRate: 0.004,
+          deduction: 630000,
+          eduTaxRate: 0.2,
+          cityTaxRate: 0.0014,
+      },
+      jongbu: {
+          deduction: 900000000, // 1인당 공제액
+          rate2026: 0.6,
+          rate2027: 0.7,
+      }
+  };
+
+  // --- 유틸리티 함수 ---
+  const formatWon = (num) => Math.max(0, Math.round(num)).toLocaleString('ko-KR');
+
+  // --- 계산 함수 ---
+  function calculatePropertyTax(price) {
+      const config = TAX_CONFIG.property;
+      const propBase = price * config.baseRate;
+      const mainPropTax = (propBase * config.taxRate) - config.deduction;
+      const eduTax = mainPropTax * config.eduTaxRate;
+      const cityTax = propBase * config.cityTaxRate;
+      return mainPropTax + eduTax + cityTax;
+  }
+
+  function calculateJongbuTax(price, year) {
+      const config = TAX_CONFIG.jongbu;
+      const rate = (year === 2026) ? config.rate2026 : config.rate2027;
+      const base = Math.max(0, (price / 2 - config.deduction) * rate);
+      
+      let taxPerPerson = 0;
+      if (year === 2026) {
+          if (base <= 300000000) taxPerPerson = base * 0.005;
+          else if (base <= 600000000) taxPerPerson = (base * 0.007) - 600000;
+          else taxPerPerson = (base * 0.01) - 2400000;
+      } else { // 2027
+          if (base <= 300000000) taxPerPerson = base * 0.005;
+          else if (base <= 600000000) taxPerPerson = (base * 0.007) - 600000;
+          else taxPerPerson = (base * 0.013) - 4200000;
+      }
+      return taxPerPerson * 2; // 부부 2명 합산
+  }
+
+  // --- UI 업데이트 함수 ---
+  function updatePropertyTaxUI() {
+      const price = parseInt(document.getElementById('priceSlider').value);
+      document.getElementById('priceLabel').innerText = formatWon(price);
+
+      // 1. 재산세
+      const totalPropTax = calculatePropertyTax(price);
+      document.getElementById('propTax').innerText = formatWon(totalPropTax);
+
+      // 2. 2026년 보유세
+      const totalJongbu2026 = calculateJongbuTax(price, 2026);
+      document.getElementById('jongbu2026').innerText = formatWon(totalJongbu2026);
+      document.getElementById('total2026').innerText = formatWon(totalPropTax + totalJongbu2026);
+
+      // 3. 2027-2028년 보유세
+      const totalJongbu2027 = calculateJongbuTax(price, 2027);
+      document.getElementById('jongbu2027').innerText = formatWon(totalJongbu2027);
+      document.getElementById('total2027').innerText = formatWon(totalPropTax + totalJongbu2027);
+  }
+
+  // --- 이벤트 리스너 설정 및 초기화 ---
+  function initialize() {
+      const priceSlider = document.getElementById('priceSlider');
+      priceSlider.addEventListener('input', updatePropertyTaxUI);
+
+      // 초기 계산 실행
+      updatePropertyTaxUI();
+  }
+
+  // 페이지 로드 완료 시 실행
+  window.addEventListener('DOMContentLoaded', initialize);
+</script>
+
+</body>
+</html>
