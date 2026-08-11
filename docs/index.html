@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>부동산 보유세 계산기 - 상세 산출과정 제공</title>
+    <title>부동산 세금 통합 계산기 (보유세 / 양도소득세)</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,13 +49,50 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
+        /* 탭 스위처 */
+        .tab-nav {
+            display: flex;
+            background-color: #f1f5f9;
+            padding: 5px;
+            border-radius: 14px;
+            margin-bottom: 28px;
+            gap: 6px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #64748b;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: #1e293b;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 26px;
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: var(--text-main);
             margin-bottom: 8px;
@@ -75,8 +112,21 @@
         }
 
         .header p {
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .notice-box {
+            background-color: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #d48806;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            text-align: center;
         }
 
         /* 컨트롤 영역 */
@@ -88,29 +138,37 @@
             margin-bottom: 28px;
         }
 
-        .price-label-wrapper {
+        .form-row {
+            margin-bottom: 18px;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .label-wrapper {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .price-title {
+        .input-title {
             font-weight: 600;
-            font-size: 1.05rem;
+            font-size: 0.98rem;
             color: var(--text-main);
         }
 
-        .price-display {
-            font-size: 1.3rem;
+        .input-display {
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--primary);
         }
 
-        .price-display .readable {
-            font-size: 1.05rem;
+        .input-display .readable {
+            font-size: 0.9rem;
             color: #475569;
             font-weight: 500;
             margin-left: 4px;
@@ -124,24 +182,42 @@
             outline: none;
             cursor: pointer;
             accent-color: var(--primary);
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
-        /* Quick Preset Buttons */
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Preset Buttons */
         .preset-buttons {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            margin-top: 8px;
         }
 
         .preset-btn {
             flex: 1;
-            min-width: 60px;
-            padding: 8px 12px;
+            min-width: 55px;
+            padding: 7px 10px;
             background: white;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
             color: #334155;
             cursor: pointer;
@@ -205,13 +281,13 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 0;
-            font-size: 0.98rem;
+            font-size: 0.95rem;
             color: #334155;
         }
 
         .summary-row.total-row {
             border-top: 2px dashed #e2e8f0;
-            margin-top: 8px;
+            margin-top: 10px;
             padding-top: 14px;
             font-size: 1.15rem;
             font-weight: 700;
@@ -243,7 +319,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 10px;
+            padding: 6px 12px;
             background-color: #f0f9ff;
             border-radius: 8px;
             transition: background 0.2s;
@@ -299,12 +375,12 @@
 
         .formula-text {
             color: #64748b;
-            margin-top: 3px;
+            margin-top: 4px;
             font-family: monospace, sans-serif;
             font-size: 0.84rem;
-            line-height: 1.4;
+            line-height: 1.45;
             background: #ffffff;
-            padding: 6px 10px;
+            padding: 8px 12px;
             border-radius: 6px;
             border: 1px solid #e2e8f0;
             word-break: break-all;
@@ -315,12 +391,12 @@
             font-weight: 700;
         }
 
-        .sub-calc {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 4px;
-            font-size: 0.85rem;
-            color: #475569;
+        .calc-section {
+            display: block;
+        }
+
+        .calc-section.hidden {
+            display: none;
         }
 
         @media (max-width: 600px) {
@@ -328,10 +404,11 @@
                 padding: 20px;
             }
             .header h1 {
-                font-size: 1.5rem;
+                font-size: 1.45rem;
             }
-            .price-display {
-                font-size: 1.1rem;
+            .tab-btn {
+                font-size: 0.88rem;
+                padding: 10px 8px;
             }
             .summary-row.total-row {
                 font-size: 1.05rem;
@@ -345,232 +422,408 @@
 <body>
 
 <div class="container">
-    <div class="header">
-        <span class="badge">부부 공동명의 (50 : 50)</span>
-        <h1>부동산 보유세 계산기</h1>
-        <p>주택 공시가격에 따른 재산세 및 종부세의 상세 산출과정을 확인하세요.</p>
+
+    <!-- 상단 계산기 선택 탭 -->
+    <div class="tab-nav">
+        <button class="tab-btn active" id="tabPropBtn" onclick="switchTab('property')">🏢 부동산 보유세</button>
+        <button class="tab-btn" id="tabGainsBtn" onclick="switchTab('gains')">💰 양도소득세</button>
     </div>
 
-    <!-- 주택 공시가격 조절 컨트롤 -->
-    <div class="control-group">
-        <div class="price-label-wrapper">
-            <span class="price-title">주택 공시가격</span>
-            <div class="price-display">
-                <span id="priceLabelExact">2,500,000,000</span> 원
-                <span id="priceLabelReadable" class="readable">(25억원)</span>
+    <!-- 1. 부동산 보유세 계산기 영역 -->
+    <div id="propertyCalcSection" class="calc-section">
+        <div class="header">
+            <span class="badge">부부 공동명의 (50 : 50)</span>
+            <h1>부동산 보유세 계산기</h1>
+            <p>주택 공시가격에 따른 재산세 및 종부세의 상세 산출과정을 확인하세요.</p>
+        </div>
+
+        <!-- 주택 공시가격 조절 컨트롤 -->
+        <div class="control-group">
+            <div class="label-wrapper">
+                <span class="input-title">주택 공시가격</span>
+                <div class="input-display">
+                    <span id="priceLabelExact">2,500,000,000</span> 원
+                    <span id="priceLabelReadable" class="readable">(25억원)</span>
+                </div>
+            </div>
+            
+            <input type="range" id="priceSlider" min="1000000000" max="5000000000" step="10000000" value="2500000000">
+
+            <div class="preset-buttons">
+                <button class="preset-btn" onclick="setPropPrice(1000000000)">10억</button>
+                <button class="preset-btn" onclick="setPropPrice(1500000000)">15억</button>
+                <button class="preset-btn" onclick="setPropPrice(2000000000)">20억</button>
+                <button class="preset-btn active" onclick="setPropPrice(2500000000)">25억</button>
+                <button class="preset-btn" onclick="setPropPrice(3000000000)">30억</button>
+                <button class="preset-btn" onclick="setPropPrice(4000000000)">40억</button>
+                <button class="preset-btn" onclick="setPropPrice(5000000000)">50억</button>
             </div>
         </div>
-        
-        <input type="range" id="priceSlider" min="1000000000" max="5000000000" step="10000000" value="2500000000">
 
-        <div class="preset-buttons">
-            <button class="preset-btn" onclick="setPrice(1000000000)">10억</button>
-            <button class="preset-btn" onclick="setPrice(1500000000)">15억</button>
-            <button class="preset-btn" onclick="setPrice(2000000000)">20억</button>
-            <button class="preset-btn active" onclick="setPrice(2500000000)">25억</button>
-            <button class="preset-btn" onclick="setPrice(3000000000)">30억</button>
-            <button class="preset-btn" onclick="setPrice(4000000000)">40억</button>
-            <button class="preset-btn" onclick="setPrice(5000000000)">50억</button>
+        <!-- 재산세 카드 -->
+        <div class="result-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>공통 산출: 재산세</span>
+                </div>
+                <span class="year-tag tag-gray">지방세</span>
+            </div>
+
+            <div class="summary-row total-row" style="border-top: none; padding-top: 0;">
+                <span>총 재산세 (지방교육세/도시지역분 포함)</span>
+                <span class="val" id="propTaxTotal" style="color: var(--primary);">0 원</span>
+            </div>
+
+            <details open>
+                <summary>🔍 재산세 상세 산출과정 보기</summary>
+                <div class="breakdown-box">
+                    <div class="breakdown-step">
+                        <span class="step-num">1</span>
+                        <span class="step-title">과세표준 산출</span>
+                        <div class="formula-text">
+                            공시가격 (<span id="propStep1Price">0</span>) × 공정시가비율 45%<br>
+                            = 과세표준 <span id="propStep1Base" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">2</span>
+                        <span class="step-title">재산세 본세 (세율 0.4%, 누진공제 63만원)</span>
+                        <div class="formula-text">
+                            (과세표준 <span id="propStep2Base">0</span> × 0.4%) - 630,000원<br>
+                            = 재산세 본세 <span id="propStep2Main" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">3</span>
+                        <span class="step-title">부과 세목 (지방교육세 & 도시지역분)</span>
+                        <div class="formula-text">
+                            • 지방교육세 (본세의 20%): <span id="propStep3Edu">0 원</span><br>
+                            • 도시지역분 (과세표준의 0.14%): <span id="propStep3City">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">4</span>
+                        <span class="step-title">총 재산세 합계</span>
+                        <div class="formula-text">
+                            본세 (<span id="propStep4Main">0</span>) + 지방교육세 (<span id="propStep4Edu">0</span>) + 도시지역분 (<span id="propStep4City">0</span>)<br>
+                            = <span id="propStep4Total" class="highlight">0 원</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 2026년 보유세 카드 -->
+        <div class="result-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>2026년 보유세</span>
+                </div>
+                <span class="year-tag tag-blue">현행 유지</span>
+            </div>
+
+            <div class="summary-row">
+                <span>부부 합산 종부세</span>
+                <span class="val" id="jongbu2026">0 원</span>
+            </div>
+            <div class="summary-row total-row">
+                <span>2026년 총 보유세 (재산세 + 종부세)</span>
+                <span class="val" id="total2026">0 원</span>
+            </div>
+
+            <details>
+                <summary>🔍 2026년 종부세 상세 산출과정 보기</summary>
+                <div class="breakdown-box">
+                    <div class="breakdown-step">
+                        <span class="step-num">1</span>
+                        <span class="step-title">1인당 공시가격 지분 & 기본공제</span>
+                        <div class="formula-text">
+                            공시가격 (<span id="j26Step1Price">0</span>) ÷ 2 = 1인당 <span id="j26Step1Share">0</span><br>
+                            기본공제 (1인당 9억원) 적용 후 과세대상 = <span id="j26Step1Target" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">2</span>
+                        <span class="step-title">1인당 과세표준 (공정시가비율 60%)</span>
+                        <div class="formula-text">
+                            과세대상 (<span id="j26Step2Target">0</span>) × 60%<br>
+                            = 과세표준 <span id="j26Step2Base" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">3</span>
+                        <span class="step-title">1인당 종부세 산출세액</span>
+                        <div class="formula-text">
+                            구간 적용: <span id="j26Step3TierInfo">3억원 이하 (세율 0.5%)</span><br>
+                            계산식: <span id="j26Step3Formula">(과세표준 × 0.5%)</span><br>
+                            = 1인당 세액 <span id="j26Step3PerPerson" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">4</span>
+                        <span class="step-title">부부 합산 종부세</span>
+                        <div class="formula-text">
+                            1인당 세액 (<span id="j26Step4PerPerson">0</span>) × 2명<br>
+                            = 부부 합산 종부세 <span id="j26Step4Total" class="highlight">0 원</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 2027~2028년 보유세 카드 -->
+        <div class="result-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>2027~2028년 보유세</span>
+                </div>
+                <span class="year-tag tag-purple">세제개편안</span>
+            </div>
+
+            <div class="summary-row">
+                <span>부부 합산 종부세</span>
+                <span class="val" id="jongbu2027">0 원</span>
+            </div>
+            <div class="summary-row total-row">
+                <span>27~28년 총 보유세 (재산세 + 종부세)</span>
+                <span class="val" id="total2027">0 원</span>
+            </div>
+
+            <details>
+                <summary>🔍 2027~2028년 종부세 상세 산출과정 보기</summary>
+                <div class="breakdown-box">
+                    <div class="breakdown-step">
+                        <span class="step-num">1</span>
+                        <span class="step-title">1인당 공시가격 지분 & 기본공제</span>
+                        <div class="formula-text">
+                            공시가격 (<span id="j27Step1Price">0</span>) ÷ 2 = 1인당 <span id="j27Step1Share">0</span><br>
+                            기본공제 (1인당 9억원) 적용 후 과세대상 = <span id="j27Step1Target" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">2</span>
+                        <span class="step-title">1인당 과세표준 (공정시가비율 70%)</span>
+                        <div class="formula-text">
+                            과세대상 (<span id="j27Step2Target">0</span>) × 70%<br>
+                            = 과세표준 <span id="j27Step2Base" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">3</span>
+                        <span class="step-title">1인당 종부세 산출세액</span>
+                        <div class="formula-text">
+                            구간 적용: <span id="j27Step3TierInfo">3억원 이하 (세율 0.5%)</span><br>
+                            계산식: <span id="j27Step3Formula">(과세표준 × 0.5%)</span><br>
+                            = 1인당 세액 <span id="j27Step3PerPerson" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">4</span>
+                        <span class="step-title">부부 합산 종부세</span>
+                        <div class="formula-text">
+                            1인당 세액 (<span id="j27Step4PerPerson">0</span>) × 2명<br>
+                            = 부부 합산 종부세 <span id="j27Step4Total" class="highlight">0 원</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
         </div>
     </div>
 
-    <!-- 1. 재산세 카드 -->
-    <div class="result-card">
-        <div class="card-header">
-            <div class="card-title">
-                <span>공통 산출: 재산세</span>
-            </div>
-            <span class="year-tag tag-gray">지방세</span>
+    <!-- 2. 양도소득세 간편 계산기 영역 -->
+    <div id="gainsCalcSection" class="calc-section hidden">
+        <div class="header">
+            <span class="badge">일반과세 (기본세율) 기준</span>
+            <h1>양도소득세 간편 계산기</h1>
+            <p>양도가액, 취득가액, 필요경비에 따른 양도세 상세 산출내역을 확인하세요.</p>
         </div>
 
-        <div class="summary-row total-row" style="border-top: none; padding-top: 0;">
-            <span>총 재산세 (지방교육세/도시지역분 포함)</span>
-            <span class="val" id="propTaxTotal" style="color: var(--primary);">0 원</span>
+        <div class="notice-box">
+            ※ 본 계산기는 일반 과세(기본세율) 기준입니다.<br>
+            1세대 1주택 비과세(12억 이하) 및 다주택자 중과는 반영되지 않은 참고용 산출 내역입니다.
         </div>
 
-        <details open>
-            <summary>🔍 재산세 상세 산출과정 보기</summary>
-            <div class="breakdown-box">
-                <div class="breakdown-step">
-                    <span class="step-num">1</span>
-                    <span class="step-title">과세표준 산출</span>
-                    <div class="formula-text">
-                        공시가격 (<span id="propStep1Price">0</span>) × 공정시가비율 45%<br>
-                        = 과세표준 <span id="propStep1Base" class="highlight">0 원</span>
-                    </div>
+        <!-- 입력폼 그룹 -->
+        <div class="control-group">
+            <div class="form-row">
+                <div class="label-wrapper">
+                    <span class="input-title">양도가액 (파는 금액)</span>
+                    <span class="input-display" id="sellPriceDisplay">1,000,000,000 원 <span class="readable">(10억원)</span></span>
                 </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">2</span>
-                    <span class="step-title">재산세 본세 (세율 0.4%, 누진공제 63만원)</span>
-                    <div class="formula-text">
-                        (과세표준 <span id="propStep2Base">0</span> × 0.4%) - 630,000원<br>
-                        = 재산세 본세 <span id="propStep2Main" class="highlight">0 원</span>
-                    </div>
-                </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">3</span>
-                    <span class="step-title">부과 세목 (지방교육세 & 도시지역분)</span>
-                    <div class="formula-text">
-                        • 지방교육세 (본세의 20%): <span id="propStep3Edu">0 원</span><br>
-                        • 도시지역분 (과세표준의 0.14%): <span id="propStep3City">0 원</span>
-                    </div>
-                </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">4</span>
-                    <span class="step-title">총 재산세 합계</span>
-                    <div class="formula-text">
-                        본세 (<span id="propStep4Main">0</span>) + 지방교육세 (<span id="propStep4Edu">0</span>) + 도시지역분 (<span id="propStep4City">0</span>)<br>
-                        = <span id="propStep4Total" class="highlight">0 원</span>
-                    </div>
+                <input type="number" id="sellPrice" value="1000000000" step="10000000" oninput="updateGainsTaxUI()">
+                <div class="preset-buttons">
+                    <button class="preset-btn" onclick="setGainsSellPrice(500000000)">5억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(800000000)">8억</button>
+                    <button class="preset-btn active" onclick="setGainsSellPrice(1000000000)">10억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(1500000000)">15억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(2000000000)">20억</button>
                 </div>
             </div>
-        </details>
-    </div>
 
-    <!-- 2. 2026년 보유세 카드 -->
-    <div class="result-card">
-        <div class="card-header">
-            <div class="card-title">
-                <span>2026년 보유세</span>
+            <div class="form-row">
+                <div class="label-wrapper">
+                    <span class="input-title">취득가액 (산 금액)</span>
+                    <span class="input-display" id="buyPriceDisplay">600,000,000 원 <span class="readable">(6억원)</span></span>
+                </div>
+                <input type="number" id="buyPrice" value="600000000" step="10000000" oninput="updateGainsTaxUI()">
             </div>
-            <span class="year-tag tag-blue">현행 유지</span>
-        </div>
 
-        <div class="summary-row">
-            <span>부부 합산 종부세</span>
-            <span class="val" id="jongbu2026">0 원</span>
-        </div>
-        <div class="summary-row total-row">
-            <span>2026년 총 보유세 (재산세 + 종부세)</span>
-            <span class="val" id="total2026">0 원</span>
-        </div>
-
-        <details>
-            <summary>🔍 2026년 종부세 상세 산출과정 보기</summary>
-            <div class="breakdown-box">
-                <div class="breakdown-step">
-                    <span class="step-num">1</span>
-                    <span class="step-title">1인당 공시가격 지분 & 기본공제</span>
-                    <div class="formula-text">
-                        공시가격 (<span id="j26Step1Price">0</span>) ÷ 2 = 1인당 <span id="j26Step1Share">0</span><br>
-                        기본공제 (1인당 9억원) 적용 후 과세대상 = <span id="j26Step1Target" class="highlight">0 원</span>
-                    </div>
+            <div class="form-row">
+                <div class="label-wrapper">
+                    <span class="input-title">필요경비 (취등록세, 인테리어 등)</span>
+                    <span class="input-display" id="expenseDisplay">20,000,000 원 <span class="readable">(2,000만원)</span></span>
                 </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">2</span>
-                    <span class="step-title">1인당 과세표준 (공정시가비율 60%)</span>
-                    <div class="formula-text">
-                        과세대상 (<span id="j26Step2Target">0</span>) × 60%<br>
-                        = 과세표준 <span id="j26Step2Base" class="highlight">0 원</span>
-                    </div>
-                </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">3</span>
-                    <span class="step-title">1인당 종부세 산출세액</span>
-                    <div class="formula-text">
-                        구간 적용: <span id="j26Step3TierInfo">3억원 이하 (세율 0.5%)</span><br>
-                        계산식: <span id="j26Step3Formula">(과세표준 × 0.5%)</span><br>
-                        = 1인당 세액 <span id="j26Step3PerPerson" class="highlight">0 원</span>
-                    </div>
-                </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">4</span>
-                    <span class="step-title">부부 합산 종부세</span>
-                    <div class="formula-text">
-                        1인당 세액 (<span id="j26Step4PerPerson">0</span>) × 2명<br>
-                        = 부부 합산 종부세 <span id="j26Step4Total" class="highlight">0 원</span>
-                    </div>
-                </div>
+                <input type="number" id="expense" value="20000000" step="1000000" oninput="updateGainsTaxUI()">
             </div>
-        </details>
-    </div>
 
-    <!-- 3. 2027~2028년 보유세 카드 -->
-    <div class="result-card">
-        <div class="card-header">
-            <div class="card-title">
-                <span>2027~2028년 보유세</span>
+            <div class="form-row">
+                <div class="label-wrapper">
+                    <span class="input-title">보유 기간 (일반 장기보유특별공제율)</span>
+                </div>
+                <select id="holdingYears" onchange="updateGainsTaxUI()">
+                    <option value="0">3년 미만 (공제 없음 0%)</option>
+                    <option value="0.06">3년 이상 ~ 4년 미만 (6%)</option>
+                    <option value="0.08">4년 이상 ~ 5년 미만 (8%)</option>
+                    <option value="0.10">5년 이상 ~ 6년 미만 (10%)</option>
+                    <option value="0.12">6년 이상 ~ 7년 미만 (12%)</option>
+                    <option value="0.14">7년 이상 ~ 8년 미만 (14%)</option>
+                    <option value="0.16">8년 이상 ~ 9년 미만 (16%)</option>
+                    <option value="0.18">9년 이상 ~ 10년 미만 (18%)</option>
+                    <option value="0.20">10년 이상 ~ 11년 미만 (20%)</option>
+                    <option value="0.22">11년 이상 ~ 12년 미만 (22%)</option>
+                    <option value="0.24">12년 이상 ~ 13년 미만 (24%)</option>
+                    <option value="0.26">13년 이상 ~ 14년 미만 (26%)</option>
+                    <option value="0.28">14년 이상 ~ 15년 미만 (28%)</option>
+                    <option value="0.30" selected>15년 이상 (최대 30%)</option>
+                </select>
             </div>
-            <span class="year-tag tag-purple">세제개편안</span>
         </div>
 
-        <div class="summary-row">
-            <span>부부 합산 종부세</span>
-            <span class="val" id="jongbu2027">0 원</span>
-        </div>
-        <div class="summary-row total-row">
-            <span>27~28년 총 보유세 (재산세 + 종부세)</span>
-            <span class="val" id="total2027">0 원</span>
-        </div>
-
-        <details>
-            <summary>🔍 2027~2028년 종부세 상세 산출과정 보기</summary>
-            <div class="breakdown-box">
-                <div class="breakdown-step">
-                    <span class="step-num">1</span>
-                    <span class="step-title">1인당 공시가격 지분 & 기본공제</span>
-                    <div class="formula-text">
-                        공시가격 (<span id="j27Step1Price">0</span>) ÷ 2 = 1인당 <span id="j27Step1Share">0</span><br>
-                        기본공제 (1인당 9억원) 적용 후 과세대상 = <span id="j27Step1Target" class="highlight">0 원</span>
-                    </div>
+        <!-- 계산 결과 카드 -->
+        <div class="result-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>양도소득세 산출 결과</span>
                 </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">2</span>
-                    <span class="step-title">1인당 과세표준 (공정시가비율 70%)</span>
-                    <div class="formula-text">
-                        과세대상 (<span id="j27Step2Target">0</span>) × 70%<br>
-                        = 과세표준 <span id="j27Step2Base" class="highlight">0 원</span>
-                    </div>
-                </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">3</span>
-                    <span class="step-title">1인당 종부세 산출세액</span>
-                    <div class="formula-text">
-                        구간 적용: <span id="j27Step3TierInfo">3억원 이하 (세율 0.5%)</span><br>
-                        계산식: <span id="j27Step3Formula">(과세표준 × 0.5%)</span><br>
-                        = 1인당 세액 <span id="j27Step3PerPerson" class="highlight">0 원</span>
-                    </div>
-                </div>
-
-                <div class="breakdown-step">
-                    <span class="step-num">4</span>
-                    <span class="step-title">부부 합산 종부세</span>
-                    <div class="formula-text">
-                        1인당 세액 (<span id="j27Step4PerPerson">0</span>) × 2명<br>
-                        = 부부 합산 종부세 <span id="j27Step4Total" class="highlight">0 원</span>
-                    </div>
-                </div>
+                <span class="year-tag tag-blue">국세 / 지방세</span>
             </div>
-        </details>
+
+            <div class="summary-row">
+                <span>양도차익</span>
+                <span class="val" id="gainsCapitalGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>장기보유특별공제</span>
+                <span class="val" id="gainsLongTermDeduction">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>과세표준 (기본공제 250만 차감 후)</span>
+                <span class="val" id="gainsTaxBase">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>적용 세율</span>
+                <span class="val" id="gainsTaxRate">0 %</span>
+            </div>
+            <div class="summary-row">
+                <span>산출세액 (본세)</span>
+                <span class="val" id="gainsMainTax">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>지방소득세 (본세의 10%)</span>
+                <span class="val" id="gainsLocalTax">0 원</span>
+            </div>
+
+            <div class="summary-row total-row">
+                <span>총 예상 납부액 (본세 + 지방소득세)</span>
+                <span class="val" id="gainsTotalTax">0 원</span>
+            </div>
+
+            <details open>
+                <summary>🔍 양도소득세 상세 산출과정 보기</summary>
+                <div class="breakdown-box">
+                    <div class="breakdown-step">
+                        <span class="step-num">1</span>
+                        <span class="step-title">양도차익 계산</span>
+                        <div class="formula-text">
+                            양도가액 (<span id="gainsStep1Sell">0</span>) - 취득가액 (<span id="gainsStep1Buy">0</span>) - 필요경비 (<span id="gainsStep1Exp">0</span>)<br>
+                            = 양도차익 <span id="gainsStep1Gain" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">2</span>
+                        <span class="step-title">장기보유특별공제</span>
+                        <div class="formula-text">
+                            양도차익 (<span id="gainsStep2Gain">0</span>) × 공제율 <span id="gainsStep2Rate">0%</span><br>
+                            = 공제액 <span id="gainsStep2Deduction" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">3</span>
+                        <span class="step-title">양도소득금액 & 기본공제</span>
+                        <div class="formula-text">
+                            양도소득금액: 양도차익 (<span id="gainsStep3Gain">0</span>) - 장기보유특별공제 (<span id="gainsStep3LongDeduction">0</span>) = <span id="gainsStep3Income">0 원</span><br>
+                            기본공제 2,500,000원 적용 후 과세표준 = <span id="gainsStep3TaxBase" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">4</span>
+                        <span class="step-title">산출세액 (세율 및 누진공제)</span>
+                        <div class="formula-text">
+                            구간 적용: <span id="gainsStep4Tier">0</span><br>
+                            계산식: <span id="gainsStep4Formula">0</span><br>
+                            = 산출세액(본세) <span id="gainsStep4MainTax" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">5</span>
+                        <span class="step-title">총 납부세액 (지방소득세 10% 포함)</span>
+                        <div class="formula-text">
+                            본세 (<span id="gainsStep5Main">0</span>) + 지방소득세 (<span id="gainsStep5Local">0</span>)<br>
+                            = 총 납부액 <span id="gainsStep5Total" class="highlight">0 원</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
     </div>
 </div>
 
 <script>
-  // --- 세율 및 설정 상수 ---
-  const TAX_CONFIG = {
-      property: {
-          baseRate: 0.45,       // 공정시가비율 45%
-          taxRate: 0.004,       // 본세 세율 0.4%
-          deduction: 630000,     // 누진공제액 63만원
-          eduTaxRate: 0.2,      // 지방교육세율 20%
-          cityTaxRate: 0.0014,  // 도시지역분 0.14%
-      },
-      jongbu: {
-          deduction: 900000000, // 1인당 기본공제액 9억원
-          rate2026: 0.6,        // 2026 공정시가비율 60%
-          rate2027: 0.7,        // 2027 공정시가비율 70%
-      }
-  };
+  // --- 탭 전환 함수 ---
+  function switchTab(tabName) {
+      const propSection = document.getElementById('propertyCalcSection');
+      const gainsSection = document.getElementById('gainsCalcSection');
+      const tabPropBtn = document.getElementById('tabPropBtn');
+      const tabGainsBtn = document.getElementById('tabGainsBtn');
 
-  // --- 유틸리티 함수 ---
+      if (tabName === 'property') {
+          propSection.classList.remove('hidden');
+          gainsSection.classList.add('hidden');
+          tabPropBtn.classList.add('active');
+          tabGainsBtn.classList.remove('active');
+      } else {
+          propSection.classList.add('hidden');
+          gainsSection.classList.remove('hidden');
+          tabPropBtn.classList.remove('active');
+          tabGainsBtn.classList.add('active');
+          updateGainsTaxUI();
+      }
+  }
+
+  // --- 유틸리티 및 금액 포맷팅 함수 ---
   const formatWon = (num) => Math.max(0, Math.round(num)).toLocaleString('ko-KR') + ' 원';
 
   function formatKoreanText(num) {
@@ -592,7 +845,24 @@
       return result ? result + '원' : '0원';
   }
 
-  // --- 상세 계산 함수 ---
+  // ==========================================
+  // 1. 부동산 보유세 계산 로직
+  // ==========================================
+  const TAX_CONFIG = {
+      property: {
+          baseRate: 0.45,       // 공정시가비율 45%
+          taxRate: 0.004,       // 본세 세율 0.4%
+          deduction: 630000,     // 누진공제액 63만원
+          eduTaxRate: 0.2,      // 지방교육세율 20%
+          cityTaxRate: 0.0014,  // 도시지역분 0.14%
+      },
+      jongbu: {
+          deduction: 900000000, // 1인당 기본공제액 9억원
+          rate2026: 0.6,        // 2026 공정시가비율 60%
+          rate2027: 0.7,        // 2027 공정시가비율 70%
+      }
+  };
+
   function calculatePropertyTaxDetails(price) {
       const config = TAX_CONFIG.property;
       const propBase = Math.round(price * config.baseRate);
@@ -678,16 +948,15 @@
       };
   }
 
-  // --- 빠른 설정 버튼 클릭 ---
-  function setPrice(value) {
+  function setPropPrice(value) {
       const slider = document.getElementById('priceSlider');
       slider.value = value;
-      updatePresetActive(value);
+      updatePropPresetActive(value);
       updatePropertyTaxUI();
   }
 
-  function updatePresetActive(value) {
-      const buttons = document.querySelectorAll('.preset-btn');
+  function updatePropPresetActive(value) {
+      const buttons = document.querySelectorAll('#propertyCalcSection .preset-btn');
       buttons.forEach(btn => {
           const btnVal = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
           if (btnVal === parseInt(value)) {
@@ -698,14 +967,12 @@
       });
   }
 
-  // --- UI 업데이트 함수 ---
   function updatePropertyTaxUI() {
       const price = parseInt(document.getElementById('priceSlider').value);
       
-      // 가격 표시
       document.getElementById('priceLabelExact').innerText = Math.round(price).toLocaleString('ko-KR');
       document.getElementById('priceLabelReadable').innerText = `(${formatKoreanText(price)})`;
-      updatePresetActive(price);
+      updatePropPresetActive(price);
 
       // 1. 재산세 상세 산출
       const p = calculatePropertyTaxDetails(price);
@@ -764,13 +1031,175 @@
       document.getElementById('j27Step4Total').innerText = formatWon(j27.totalJongbu) + ` (${formatKoreanText(j27.totalJongbu)})`;
   }
 
-  // --- 이벤트 리스너 설정 및 초기화 ---
+
+  // ==========================================
+  // 2. 양도소득세 계산 로직
+  // ==========================================
+  function calculateTransferTaxDetails(sellPrice, buyPrice, expense, deductionRate) {
+      sellPrice = Math.max(0, Number(sellPrice) || 0);
+      buyPrice = Math.max(0, Number(buyPrice) || 0);
+      expense = Math.max(0, Number(expense) || 0);
+      deductionRate = Math.max(0, Number(deductionRate) || 0);
+
+      // 1. 양도차익 = 양도가액 - 취득가액 - 필요경비
+      let capitalGain = Math.max(0, sellPrice - buyPrice - expense);
+
+      // 2. 장기보유특별공제
+      let longTermDeduction = Math.round(capitalGain * deductionRate);
+
+      // 3. 양도소득금액 = 양도차익 - 장기보유특별공제
+      let incomeAmount = Math.max(0, capitalGain - longTermDeduction);
+
+      // 4. 과세표준 = 양도소득금액 - 기본공제 (250만원)
+      const basicDeduction = 2500000;
+      let taxBase = Math.max(0, incomeAmount - basicDeduction);
+
+      // 5. 세율 및 누진공제 산출 (일반과세 8단계 과세표준)
+      let rate = 0;
+      let progressiveDeduction = 0;
+      let tierInfo = "";
+      let formulaText = "";
+
+      if (taxBase <= 0) {
+          tierInfo = "과세표준 없음";
+          formulaText = "0원";
+      } else if (taxBase <= 14000000) {
+          rate = 0.06; progressiveDeduction = 0;
+          tierInfo = "1,400만원 이하 (세율 6%)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 6%)`;
+      } else if (taxBase <= 50000000) {
+          rate = 0.15; progressiveDeduction = 1080000;
+          tierInfo = "1,400만 ~ 5,000만원 이하 (세율 15%, 누진공제 108만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 15%) - 108만원`;
+      } else if (taxBase <= 88000000) {
+          rate = 0.24; progressiveDeduction = 5220000;
+          tierInfo = "5,000만 ~ 8,800만원 이하 (세율 24%, 누진공제 522만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 24%) - 522만원`;
+      } else if (taxBase <= 150000000) {
+          rate = 0.35; progressiveDeduction = 14900000;
+          tierInfo = "8,800만 ~ 1.5억원 이하 (세율 35%, 누진공제 1,490만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 35%) - 1,490만원`;
+      } else if (taxBase <= 300000000) {
+          rate = 0.38; progressiveDeduction = 19400000;
+          tierInfo = "1.5억 ~ 3억원 이하 (세율 38%, 누진공제 1,940만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 38%) - 1,940만원`;
+      } else if (taxBase <= 500000000) {
+          rate = 0.40; progressiveDeduction = 25400000;
+          tierInfo = "3억 ~ 5억원 이하 (세율 40%, 누진공제 2,540만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 40%) - 2,540만원`;
+      } else if (taxBase <= 1000000000) {
+          rate = 0.42; progressiveDeduction = 35400000;
+          tierInfo = "5억 ~ 10억원 이하 (세율 42%, 누진공제 3,540만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 42%) - 3,540만원`;
+      } else {
+          rate = 0.45; progressiveDeduction = 65400000;
+          tierInfo = "10억원 초과 (세율 45%, 누진공제 6,540만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 45%) - 6,540만원`;
+      }
+
+      // 6. 산출세액 = (과세표준 × 세율) - 누진공제
+      let mainTax = Math.max(0, Math.round((taxBase * rate) - progressiveDeduction));
+
+      // 7. 지방소득세 = 산출세액의 10%
+      let localTax = Math.round(mainTax * 0.1);
+
+      // 8. 총 예상 납부액
+      let totalTax = mainTax + localTax;
+
+      return {
+          sellPrice,
+          buyPrice,
+          expense,
+          capitalGain,
+          deductionRate,
+          longTermDeduction,
+          incomeAmount,
+          basicDeduction,
+          taxBase,
+          rate,
+          progressiveDeduction,
+          tierInfo,
+          formulaText,
+          mainTax,
+          localTax,
+          totalTax
+      };
+  }
+
+  function setGainsSellPrice(value) {
+      document.getElementById('sellPrice').value = value;
+      updateGainsPresetActive(value);
+      updateGainsTaxUI();
+  }
+
+  function updateGainsPresetActive(value) {
+      const buttons = document.querySelectorAll('#gainsCalcSection .preset-btn');
+      buttons.forEach(btn => {
+          const btnVal = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
+          if (btnVal === parseInt(value)) {
+              btn.classList.add('active');
+          } else {
+              btn.classList.remove('active');
+          }
+      });
+  }
+
+  function updateGainsTaxUI() {
+      const sellPrice = Number(document.getElementById('sellPrice').value);
+      const buyPrice = Number(document.getElementById('buyPrice').value);
+      const expense = Number(document.getElementById('expense').value);
+      const deductionRate = Number(document.getElementById('holdingYears').value);
+
+      // 입력된 금액 실시간 텍스트 표시
+      document.getElementById('sellPriceDisplay').innerHTML = `${Math.round(sellPrice).toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(sellPrice)})</span>`;
+      document.getElementById('buyPriceDisplay').innerHTML = `${Math.round(buyPrice).toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(buyPrice)})</span>`;
+      document.getElementById('expenseDisplay').innerHTML = `${Math.round(expense).toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(expense)})</span>`;
+
+      updateGainsPresetActive(sellPrice);
+
+      const g = calculateTransferTaxDetails(sellPrice, buyPrice, expense, deductionRate);
+
+      // 요약 카드 대입
+      document.getElementById('gainsCapitalGain').innerText = formatWon(g.capitalGain);
+      document.getElementById('gainsLongTermDeduction').innerText = formatWon(g.longTermDeduction);
+      document.getElementById('gainsTaxBase').innerText = formatWon(g.taxBase);
+      document.getElementById('gainsTaxRate').innerText = (g.rate * 100).toFixed(0) + " %";
+      document.getElementById('gainsMainTax').innerText = formatWon(g.mainTax);
+      document.getElementById('gainsLocalTax').innerText = formatWon(g.localTax);
+      document.getElementById('gainsTotalTax').innerText = formatWon(g.totalTax);
+
+      // 상세 산출 과정 대입
+      document.getElementById('gainsStep1Sell').innerText = formatWon(g.sellPrice);
+      document.getElementById('gainsStep1Buy').innerText = formatWon(g.buyPrice);
+      document.getElementById('gainsStep1Exp').innerText = formatWon(g.expense);
+      document.getElementById('gainsStep1Gain').innerText = formatWon(g.capitalGain) + ` (${formatKoreanText(g.capitalGain)})`;
+
+      document.getElementById('gainsStep2Gain').innerText = formatWon(g.capitalGain);
+      document.getElementById('gainsStep2Rate').innerText = (g.deductionRate * 100).toFixed(0) + "%";
+      document.getElementById('gainsStep2Deduction').innerText = formatWon(g.longTermDeduction) + ` (${formatKoreanText(g.longTermDeduction)})`;
+
+      document.getElementById('gainsStep3Gain').innerText = formatWon(g.capitalGain);
+      document.getElementById('gainsStep3LongDeduction').innerText = formatWon(g.longTermDeduction);
+      document.getElementById('gainsStep3Income').innerText = formatWon(g.incomeAmount);
+      document.getElementById('gainsStep3TaxBase').innerText = formatWon(g.taxBase) + ` (${formatKoreanText(g.taxBase)})`;
+
+      document.getElementById('gainsStep4Tier').innerText = g.tierInfo;
+      document.getElementById('gainsStep4Formula').innerText = g.formulaText;
+      document.getElementById('gainsStep4MainTax').innerText = formatWon(g.mainTax) + ` (${formatKoreanText(g.mainTax)})`;
+
+      document.getElementById('gainsStep5Main').innerText = formatWon(g.mainTax);
+      document.getElementById('gainsStep5Local').innerText = formatWon(g.localTax);
+      document.getElementById('gainsStep5Total').innerText = formatWon(g.totalTax) + ` (${formatKoreanText(g.totalTax)})`;
+  }
+
+  // --- 이벤트 리스너 및 초기화 ---
   function initialize() {
       const priceSlider = document.getElementById('priceSlider');
-      priceSlider.addEventListener('input', updatePropertyTaxUI);
-
-      // 초기 계산 실행
+      if (priceSlider) {
+          priceSlider.addEventListener('input', updatePropertyTaxUI);
+      }
       updatePropertyTaxUI();
+      updateGainsTaxUI();
   }
 
   window.addEventListener('DOMContentLoaded', initialize);
