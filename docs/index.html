@@ -984,8 +984,8 @@
       document.getElementById('propStep2Base').innerText = formatWon(p.propBase);
       document.getElementById('propStep2Main').innerText = formatWon(p.mainPropTax) + ` (${formatKoreanText(p.mainPropTax)})`;
 
-      document.getElementById('propStep3Edu').innerText = formatWon(p.eduTax);
-      document.getElementById('propStep3City').innerText = formatWon(p.cityTax);
+      document.getElementById('propStep3Edu').innerText = `본세 (${formatKoreanText(p.mainPropTax)}) × 20% = ` + formatWon(p.eduTax);
+      document.getElementById('propStep3City').innerText = `과세표준 (${formatKoreanText(p.propBase)}) × 0.14% = ` + formatWon(p.cityTax);
 
       document.getElementById('propStep4Main').innerText = formatWon(p.mainPropTax);
       document.getElementById('propStep4Edu').innerText = formatWon(p.eduTax);
