@@ -31,3 +31,4 @@ Use this skill when the user asks to automatically commit changes, create a git 
 
 5. **Report Result**:
    - Confirm to the user the committed files and the commit hash/message created.
+   - **IMPORTANT**: Do NOT execute `git push` unless the user explicitly asks to push. Keep changes in local git repository.
