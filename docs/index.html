@@ -202,6 +202,30 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-wrapper input[type="number"] {
+            padding-right: 68px;
+        }
+
+        .input-wrapper .unit-badge {
+            position: absolute;
+            right: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #64748b;
+            pointer-events: none;
+            background: #f1f5f9;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
         /* Preset Buttons */
         .preset-buttons {
             display: flex;
@@ -639,33 +663,59 @@
         </div>
     </div>
 
-    <!-- 2. 양도소득세 간편 계산기 영역 -->
+    <!-- 2. 양도소득세 계산기 영역 -->
     <div id="gainsCalcSection" class="calc-section hidden">
         <div class="header">
-            <span class="badge">일반과세 (기본세율) 기준</span>
-            <h1>양도소득세 간편 계산기</h1>
-            <p>양도가액, 취득가액, 필요경비에 따른 양도세 상세 산출내역을 확인하세요.</p>
+            <span class="badge">2026년 세제개편안 및 12억 비과세 안분 반영</span>
+            <h1>양도소득세 정밀 계산기</h1>
+            <p>1세대 1주택(12억 초과분 안분), 공동명의(50:50) 및 연도별 세제개편안 세액을 비교하세요.</p>
         </div>
 
         <div class="notice-box">
-            ※ 본 계산기는 일반 과세(기본세율) 기준입니다.<br>
-            1세대 1주택 비과세(12억 이하) 및 다주택자 중과는 반영되지 않은 참고용 산출 내역입니다.
+            ※ 본 계산기는 1세대 1주택 12억원 초과분 과세대상 안분, 부부 공동명의(50:50) 1인당 과세표준,<br>
+            및 2026년 발표 세제개편안(연도별 장기보유특별공제 및 공제한도)을 표준 산식으로 반영합니다.
         </div>
 
         <!-- 입력폼 그룹 -->
         <div class="control-group">
             <div class="form-row">
                 <div class="label-wrapper">
+                    <span class="input-title">주택 보유 및 과세 구분</span>
+                </div>
+                <select id="gainsHouseType" onchange="toggleGainsResidenceRow(); updateGainsTaxUI();">
+                    <option value="1house" selected>1세대 1주택 (12억원 이하 비과세 / 12억 초과분 안분 과세)</option>
+                    <option value="normal">일반 과세 (비과세 미적용 / 일반 장기보유특별공제)</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="label-wrapper">
+                    <span class="input-title">소유 명의 구분</span>
+                </div>
+                <select id="gainsOwnershipType" onchange="updateGainsTaxUI()">
+                    <option value="joint" selected>부부 공동명의 (50 : 50 지분 분할)</option>
+                    <option value="single">단독명의 (100% 지분)</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <div class="label-wrapper">
                     <span class="input-title">양도가액 (파는 금액)</span>
                     <span class="input-display" id="sellPriceDisplay">1,000,000,000 원 <span class="readable">(10억원)</span></span>
                 </div>
-                <input type="number" id="sellPrice" value="1000000000" step="10000000" oninput="updateGainsTaxUI()">
+                <div class="input-wrapper">
+                    <input type="number" id="sellPrice" value="10" step="0.1" min="0" placeholder="예: 35" oninput="updateGainsTaxUI()">
+                    <span class="unit-badge">억원</span>
+                </div>
                 <div class="preset-buttons">
-                    <button class="preset-btn" onclick="setGainsSellPrice(500000000)">5억</button>
-                    <button class="preset-btn" onclick="setGainsSellPrice(800000000)">8억</button>
-                    <button class="preset-btn active" onclick="setGainsSellPrice(1000000000)">10억</button>
-                    <button class="preset-btn" onclick="setGainsSellPrice(1500000000)">15억</button>
-                    <button class="preset-btn" onclick="setGainsSellPrice(2000000000)">20억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(5)">5억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(8)">8억</button>
+                    <button class="preset-btn active" onclick="setGainsSellPrice(10)">10억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(15)">15억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(20)">20억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(25)">25억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(30)">30억</button>
+                    <button class="preset-btn" onclick="setGainsSellPrice(35)">35억</button>
                 </div>
             </div>
 
@@ -674,7 +724,10 @@
                     <span class="input-title">취득가액 (산 금액)</span>
                     <span class="input-display" id="buyPriceDisplay">600,000,000 원 <span class="readable">(6억원)</span></span>
                 </div>
-                <input type="number" id="buyPrice" value="600000000" step="10000000" oninput="updateGainsTaxUI()">
+                <div class="input-wrapper">
+                    <input type="number" id="buyPrice" value="6" step="0.1" min="0" placeholder="예: 6" oninput="updateGainsTaxUI()">
+                    <span class="unit-badge">억원</span>
+                </div>
             </div>
 
             <div class="form-row">
@@ -682,117 +735,428 @@
                     <span class="input-title">필요경비 (취등록세, 인테리어 등)</span>
                     <span class="input-display" id="expenseDisplay">20,000,000 원 <span class="readable">(2,000만원)</span></span>
                 </div>
-                <input type="number" id="expense" value="20000000" step="1000000" oninput="updateGainsTaxUI()">
+                <div class="input-wrapper">
+                    <input type="number" id="expense" value="2000" step="100" min="0" placeholder="예: 2000" oninput="updateGainsTaxUI()">
+                    <span class="unit-badge">만원</span>
+                </div>
             </div>
 
             <div class="form-row">
                 <div class="label-wrapper">
-                    <span class="input-title">보유 기간 (일반 장기보유특별공제율)</span>
+                    <span class="input-title">주택 취득 시기 (연도별 보유기간 자동계산)</span>
                 </div>
-                <select id="holdingYears" onchange="updateGainsTaxUI()">
-                    <option value="0">3년 미만 (공제 없음 0%)</option>
-                    <option value="0.06">3년 이상 ~ 4년 미만 (6%)</option>
-                    <option value="0.08">4년 이상 ~ 5년 미만 (8%)</option>
-                    <option value="0.10">5년 이상 ~ 6년 미만 (10%)</option>
-                    <option value="0.12">6년 이상 ~ 7년 미만 (12%)</option>
-                    <option value="0.14">7년 이상 ~ 8년 미만 (14%)</option>
-                    <option value="0.16">8년 이상 ~ 9년 미만 (16%)</option>
-                    <option value="0.18">9년 이상 ~ 10년 미만 (18%)</option>
-                    <option value="0.20">10년 이상 ~ 11년 미만 (20%)</option>
-                    <option value="0.22">11년 이상 ~ 12년 미만 (22%)</option>
-                    <option value="0.24">12년 이상 ~ 13년 미만 (24%)</option>
-                    <option value="0.26">13년 이상 ~ 14년 미만 (26%)</option>
-                    <option value="0.28">14년 이상 ~ 15년 미만 (28%)</option>
-                    <option value="0.30" selected>15년 이상 (최대 30%)</option>
+                <div style="display: flex; gap: 8px;">
+                    <select id="acquireYear" onchange="updateGainsTaxUI()" style="flex: 1.2;">
+                        <option value="2025">2025년 취득</option>
+                        <option value="2024">2024년 취득</option>
+                        <option value="2023">2023년 취득</option>
+                        <option value="2022" selected>2022년 취득</option>
+                        <option value="2021">2021년 취득</option>
+                        <option value="2020">2020년 취득</option>
+                        <option value="2019">2019년 취득</option>
+                        <option value="2018">2018년 취득</option>
+                        <option value="2017">2017년 취득</option>
+                        <option value="2016">2016년 이전 (10년 이상)</option>
+                    </select>
+                    <select id="acquireMonth" onchange="updateGainsTaxUI()" style="flex: 0.8;">
+                        <option value="1">1월</option>
+                        <option value="2">2월</option>
+                        <option value="3">3월</option>
+                        <option value="4">4월</option>
+                        <option value="5">5월</option>
+                        <option value="6">6월</option>
+                        <option value="7">7월</option>
+                        <option value="8">8월</option>
+                        <option value="9">9월</option>
+                        <option value="10">10월</option>
+                        <option value="11" selected>11월</option>
+                        <option value="12">12월</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row" id="gainsResidenceRow">
+                <div class="label-wrapper">
+                    <span class="input-title">실거주 여부 (1세대 1주택 전용)</span>
+                </div>
+                <select id="gainsResidenceType" onchange="updateGainsTaxUI()">
+                    <option value="full" selected>취득 후 전 기간 실거주 (보유기간과 동일)</option>
+                    <option value="0">비거주 / 2년 미만 (우대공제 미적용, 일반공제)</option>
+                    <option value="2">2년 이상 ~ 3년 미만</option>
+                    <option value="3">3년 이상 ~ 4년 미만</option>
+                    <option value="4">4년 이상 ~ 5년 미만</option>
+                    <option value="5">5년 이상 ~ 6년 미만</option>
+                    <option value="6">6년 이상 ~ 7년 미만</option>
+                    <option value="7">7년 이상 ~ 8년 미만</option>
+                    <option value="8">8년 이상 ~ 9년 미만</option>
+                    <option value="9">9년 이상 ~ 10년 미만</option>
+                    <option value="10">10년 이상 (최대 공제)</option>
                 </select>
             </div>
         </div>
 
-        <!-- 계산 결과 카드 -->
+        <!-- 1. 2026년 양도소득세 카드 (현행) -->
         <div class="result-card">
             <div class="card-header">
                 <div class="card-title">
-                    <span>양도소득세 산출 결과</span>
+                    <span>2026년 양도 시</span>
                 </div>
-                <span class="year-tag tag-blue">국세 / 지방세</span>
+                <span class="year-tag tag-blue">현행 규정 (보유 4% + 거주 4%)</span>
             </div>
 
             <div class="summary-row">
-                <span>양도차익</span>
-                <span class="val" id="gainsCapitalGain">0 원</span>
+                <span>총 양도차익</span>
+                <span class="val" id="gains26CapitalGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>과세 대상 양도차익 (12억 초과 안분)</span>
+                <span class="val" id="gains26TaxableGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>1인당 과세 대상 양도차익</span>
+                <span class="val" id="gains26PerPersonGain">0 원</span>
             </div>
             <div class="summary-row">
                 <span>장기보유특별공제</span>
-                <span class="val" id="gainsLongTermDeduction">0 원</span>
+                <span class="val" id="gains26Deduction">0 원</span>
             </div>
             <div class="summary-row">
                 <span>과세표준 (기본공제 250만 차감 후)</span>
-                <span class="val" id="gainsTaxBase">0 원</span>
+                <span class="val" id="gains26TaxBase">0 원</span>
             </div>
             <div class="summary-row">
-                <span>적용 세율</span>
-                <span class="val" id="gainsTaxRate">0 %</span>
-            </div>
-            <div class="summary-row">
-                <span>산출세액 (본세)</span>
-                <span class="val" id="gainsMainTax">0 원</span>
-            </div>
-            <div class="summary-row">
-                <span>지방소득세 (본세의 10%)</span>
-                <span class="val" id="gainsLocalTax">0 원</span>
+                <span>1인당 산출세액 (본세)</span>
+                <span class="val" id="gains26MainTax">0 원</span>
             </div>
 
             <div class="summary-row total-row">
-                <span>총 예상 납부액 (본세 + 지방소득세)</span>
-                <span class="val" id="gainsTotalTax">0 원</span>
+                <span>최종 납부세액 (본세 + 지방세 10%)</span>
+                <span class="val" id="gains26TotalTax">0 원</span>
             </div>
 
             <details open>
-                <summary>🔍 양도소득세 상세 산출과정 보기</summary>
+                <summary>🔍 2026년 상세 산출과정 보기</summary>
                 <div class="breakdown-box">
                     <div class="breakdown-step">
                         <span class="step-num">1</span>
-                        <span class="step-title">양도차익 계산</span>
+                        <span class="step-title">총 양도차익 산출</span>
                         <div class="formula-text">
-                            양도가액 (<span id="gainsStep1Sell">0</span>) - 취득가액 (<span id="gainsStep1Buy">0</span>) - 필요경비 (<span id="gainsStep1Exp">0</span>)<br>
-                            = 양도차익 <span id="gainsStep1Gain" class="highlight">0 원</span>
+                            양도가액 (<span id="gains26S1Sell">0</span>) - 취득가액 (<span id="gains26S1Buy">0</span>) - 필요경비 (<span id="gains26S1Exp">0</span>)<br>
+                            = 총 양도차익 <span id="gains26S1Gain" class="highlight">0 원</span>
                         </div>
                     </div>
 
                     <div class="breakdown-step">
                         <span class="step-num">2</span>
-                        <span class="step-title">장기보유특별공제</span>
+                        <span class="step-title">1세대 1주택 과세 대상 양도차익 (12억 초과분 안분)</span>
                         <div class="formula-text">
-                            양도차익 (<span id="gainsStep2Gain">0</span>) × 공제율 <span id="gainsStep2Rate">0%</span><br>
-                            = 공제액 <span id="gainsStep2Deduction" class="highlight">0 원</span>
+                            총 양도차익 (<span id="gains26S2Sell">0</span>) × 안분비율 [<span id="gains26S2Ratio">0%</span>]<br>
+                            = 과세 대상 양도차익 <span id="gains26S2Taxable" class="highlight">0 원</span>
                         </div>
                     </div>
 
                     <div class="breakdown-step">
                         <span class="step-num">3</span>
-                        <span class="step-title">양도소득금액 & 기본공제</span>
+                        <span class="step-title">인별 과세 대상 양도차익 (명의 지분 반영)</span>
                         <div class="formula-text">
-                            양도소득금액: 양도차익 (<span id="gainsStep3Gain">0</span>) - 장기보유특별공제 (<span id="gainsStep3LongDeduction">0</span>) = <span id="gainsStep3Income">0 원</span><br>
-                            기본공제 2,500,000원 적용 후 과세표준 = <span id="gainsStep3TaxBase" class="highlight">0 원</span>
+                            과세 대상 양도차익 × 지분율 (<span id="gains26S3Ratio">50%</span>)<br>
+                            = 1인당 과세 대상 양도차익 <span id="gains26S3PerPerson" class="highlight">0 원</span>
                         </div>
                     </div>
 
                     <div class="breakdown-step">
                         <span class="step-num">4</span>
-                        <span class="step-title">산출세액 (세율 및 누진공제)</span>
+                        <span class="step-title">공제액 차감 및 과세표준 산출</span>
                         <div class="formula-text">
-                            구간 적용: <span id="gainsStep4Tier">0</span><br>
-                            계산식: <span id="gainsStep4Formula">0</span><br>
-                            = 산출세액(본세) <span id="gainsStep4MainTax" class="highlight">0 원</span>
+                            • 적용 공제: <span id="gains26S4DeductionDesc">0%</span> (공제액 <span id="gains26S4Deduction">0원</span>)<br>
+                            • 계산식: (인별 양도차익 - 공제액) - 기본공제(250만원)<br>
+                            = 과세표준 <span id="gains26S4TaxBase" class="highlight">0 원</span>
                         </div>
                     </div>
 
                     <div class="breakdown-step">
                         <span class="step-num">5</span>
-                        <span class="step-title">총 납부세액 (지방소득세 10% 포함)</span>
+                        <span class="step-title">산출세액 및 최종 납부세액</span>
                         <div class="formula-text">
-                            본세 (<span id="gainsStep5Main">0</span>) + 지방소득세 (<span id="gainsStep5Local">0</span>)<br>
-                            = 총 납부액 <span id="gainsStep5Total" class="highlight">0 원</span>
+                            • 구간: <span id="gains26S5Tier">0</span><br>
+                            • 계산식: <span id="gains26S5Formula">0</span> = 1인당 본세 <span id="gains26S5Main">0원</span> (지방세 <span id="gains26S5Local">0원</span>)<br>
+                            = 최종 납부세액 <span id="gains26S5Final" class="highlight">0 원</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 2. 2027년 양도소득세 카드 (유예) -->
+        <div class="result-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>2027년 양도 시</span>
+                </div>
+                <span class="year-tag tag-blue">개편 유예 기간 (보유 4% + 거주 4%)</span>
+            </div>
+
+            <div class="summary-row">
+                <span>총 양도차익</span>
+                <span class="val" id="gains27CapitalGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>과세 대상 양도차익 (12억 초과 안분)</span>
+                <span class="val" id="gains27TaxableGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>1인당 과세 대상 양도차익</span>
+                <span class="val" id="gains27PerPersonGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>장기보유특별공제</span>
+                <span class="val" id="gains27Deduction">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>과세표준 (기본공제 250만 차감 후)</span>
+                <span class="val" id="gains27TaxBase">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>1인당 산출세액 (본세)</span>
+                <span class="val" id="gains27MainTax">0 원</span>
+            </div>
+
+            <div class="summary-row total-row">
+                <span>최종 납부세액 (본세 + 지방세 10%)</span>
+                <span class="val" id="gains27TotalTax">0 원</span>
+            </div>
+
+            <details>
+                <summary>🔍 2027년 상세 산출과정 보기</summary>
+                <div class="breakdown-box">
+                    <div class="breakdown-step">
+                        <span class="step-num">1</span>
+                        <span class="step-title">총 양도차익 산출</span>
+                        <div class="formula-text">
+                            양도가액 (<span id="gains27S1Sell">0</span>) - 취득가액 (<span id="gains27S1Buy">0</span>) - 필요경비 (<span id="gains27S1Exp">0</span>)<br>
+                            = 총 양도차익 <span id="gains27S1Gain" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">2</span>
+                        <span class="step-title">1세대 1주택 과세 대상 양도차익 (12억 초과분 안분)</span>
+                        <div class="formula-text">
+                            총 양도차익 (<span id="gains27S2Sell">0</span>) × 안분비율 [<span id="gains27S2Ratio">0%</span>]<br>
+                            = 과세 대상 양도차익 <span id="gains27S2Taxable" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">3</span>
+                        <span class="step-title">인별 과세 대상 양도차익 (명의 지분 반영)</span>
+                        <div class="formula-text">
+                            과세 대상 양도차익 × 지분율 (<span id="gains27S3Ratio">50%</span>)<br>
+                            = 1인당 과세 대상 양도차익 <span id="gains27S3PerPerson" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">4</span>
+                        <span class="step-title">공제액 차감 및 과세표준 산출</span>
+                        <div class="formula-text">
+                            • 적용 공제: <span id="gains27S4DeductionDesc">0%</span> (공제액 <span id="gains27S4Deduction">0원</span>)<br>
+                            • 계산식: (인별 양도차익 - 공제액) - 기본공제(250만원)<br>
+                            = 과세표준 <span id="gains27S4TaxBase" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">5</span>
+                        <span class="step-title">산출세액 및 최종 납부세액</span>
+                        <div class="formula-text">
+                            • 구간: <span id="gains27S5Tier">0</span><br>
+                            • 계산식: <span id="gains27S5Formula">0</span> = 1인당 본세 <span id="gains27S5Main">0원</span> (지방세 <span id="gains27S5Local">0원</span>)<br>
+                            = 최종 납부세액 <span id="gains27S5Final" class="highlight">0 원</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 3. 2028년 양도소득세 카드 (1단계 개편) -->
+        <div class="result-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>2028년 양도 시</span>
+                </div>
+                <span class="year-tag tag-purple">개편 1단계 (보유 2% + 거주 6%)</span>
+            </div>
+
+            <div class="summary-row">
+                <span>총 양도차익</span>
+                <span class="val" id="gains28CapitalGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>과세 대상 양도차익 (12억 초과 안분)</span>
+                <span class="val" id="gains28TaxableGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>1인당 과세 대상 양도차익</span>
+                <span class="val" id="gains28PerPersonGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>장기보유특별공제 (1인당 한도 10억 / 공동 합산 20억)</span>
+                <span class="val" id="gains28Deduction">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>과세표준 (기본공제 250만 차감 후)</span>
+                <span class="val" id="gains28TaxBase">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>1인당 산출세액 (본세)</span>
+                <span class="val" id="gains28MainTax">0 원</span>
+            </div>
+
+            <div class="summary-row total-row">
+                <span>최종 납부세액 (본세 + 지방세 10%)</span>
+                <span class="val" id="gains28TotalTax">0 원</span>
+            </div>
+
+            <details>
+                <summary>🔍 2028년 상세 산출과정 보기</summary>
+                <div class="breakdown-box">
+                    <div class="breakdown-step">
+                        <span class="step-num">1</span>
+                        <span class="step-title">총 양도차익 산출</span>
+                        <div class="formula-text">
+                            양도가액 (<span id="gains28S1Sell">0</span>) - 취득가액 (<span id="gains28S1Buy">0</span>) - 필요경비 (<span id="gains28S1Exp">0</span>)<br>
+                            = 총 양도차익 <span id="gains28S1Gain" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">2</span>
+                        <span class="step-title">1세대 1주택 과세 대상 양도차익 (12억 초과분 안분)</span>
+                        <div class="formula-text">
+                            총 양도차익 (<span id="gains28S2Sell">0</span>) × 안분비율 [<span id="gains28S2Ratio">0%</span>]<br>
+                            = 과세 대상 양도차익 <span id="gains28S2Taxable" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">3</span>
+                        <span class="step-title">인별 과세 대상 양도차익 (명의 지분 반영)</span>
+                        <div class="formula-text">
+                            과세 대상 양도차익 × 지분율 (<span id="gains28S3Ratio">50%</span>)<br>
+                            = 1인당 과세 대상 양도차익 <span id="gains28S3PerPerson" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">4</span>
+                        <span class="step-title">공제액 차감 및 과세표준 산출</span>
+                        <div class="formula-text">
+                            • 적용 공제: <span id="gains28S4DeductionDesc">0%</span> (공제액 <span id="gains28S4Deduction">0원</span>)<br>
+                            • 계산식: (인별 양도차익 - 연도별 공제액) - 기본공제(250만원)<br>
+                            = 과세표준 <span id="gains28S4TaxBase" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">5</span>
+                        <span class="step-title">산출세액 및 최종 납부세액</span>
+                        <div class="formula-text">
+                            • 구간: <span id="gains28S5Tier">0</span><br>
+                            • 계산식: <span id="gains28S5Formula">0</span> = 1인당 본세 <span id="gains28S5Main">0원</span> (지방세 <span id="gains28S5Local">0원</span>)<br>
+                            = 최종 납부세액 <span id="gains28S5Final" class="highlight">0 원</span>
+                        </div>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <!-- 4. 2029년 이후 양도소득세 카드 (2단계 개편) -->
+        <div class="result-card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>2029년 이후 양도 시</span>
+                </div>
+                <span class="year-tag tag-purple">개편 2단계 (거주 8%, 보유폐지)</span>
+            </div>
+
+            <div class="summary-row">
+                <span>총 양도차익</span>
+                <span class="val" id="gains29CapitalGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>과세 대상 양도차익 (12억 초과 안분)</span>
+                <span class="val" id="gains29TaxableGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>1인당 과세 대상 양도차익</span>
+                <span class="val" id="gains29PerPersonGain">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>장기보유특별공제 (1인당 한도 5억 / 공동 합산 10억, 보유공제 폐지)</span>
+                <span class="val" id="gains29Deduction">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>과세표준 (기본공제 250만 차감 후)</span>
+                <span class="val" id="gains29TaxBase">0 원</span>
+            </div>
+            <div class="summary-row">
+                <span>1인당 산출세액 (본세)</span>
+                <span class="val" id="gains29MainTax">0 원</span>
+            </div>
+
+            <div class="summary-row total-row">
+                <span>최종 납부세액 (본세 + 지방세 10%)</span>
+                <span class="val" id="gains29TotalTax">0 원</span>
+            </div>
+
+            <details>
+                <summary>🔍 2029년 이후 상세 산출과정 보기</summary>
+                <div class="breakdown-box">
+                    <div class="breakdown-step">
+                        <span class="step-num">1</span>
+                        <span class="step-title">총 양도차익 산출</span>
+                        <div class="formula-text">
+                            양도가액 (<span id="gains29S1Sell">0</span>) - 취득가액 (<span id="gains29S1Buy">0</span>) - 필요경비 (<span id="gains29S1Exp">0</span>)<br>
+                            = 총 양도차익 <span id="gains29S1Gain" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">2</span>
+                        <span class="step-title">1세대 1주택 과세 대상 양도차익 (12억 초과분 안분)</span>
+                        <div class="formula-text">
+                            총 양도차익 (<span id="gains29S2Sell">0</span>) × 안분비율 [<span id="gains29S2Ratio">0%</span>]<br>
+                            = 과세 대상 양도차익 <span id="gains29S2Taxable" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">3</span>
+                        <span class="step-title">인별 과세 대상 양도차익 (명의 지분 반영)</span>
+                        <div class="formula-text">
+                            과세 대상 양도차익 × 지분율 (<span id="gains29S3Ratio">50%</span>)<br>
+                            = 1인당 과세 대상 양도차익 <span id="gains29S3PerPerson" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">4</span>
+                        <span class="step-title">공제액 차감 및 과세표준 산출</span>
+                        <div class="formula-text">
+                            • 적용 공제: <span id="gains29S4DeductionDesc">0%</span> (공제액 <span id="gains29S4Deduction">0원</span>)<br>
+                            • 계산식: (인별 양도차익 - 연도별 공제액) - 기본공제(250만원)<br>
+                            = 과세표준 <span id="gains29S4TaxBase" class="highlight">0 원</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-step">
+                        <span class="step-num">5</span>
+                        <span class="step-title">산출세액 및 최종 납부세액</span>
+                        <div class="formula-text">
+                            • 구간: <span id="gains29S5Tier">0</span><br>
+                            • 계산식: <span id="gains29S5Formula">0</span> = 1인당 본세 <span id="gains29S5Main">0원</span> (지방세 <span id="gains29S5Local">0원</span>)<br>
+                            = 최종 납부세액 <span id="gains29S5Final" class="highlight">0 원</span>
                         </div>
                     </div>
                 </div>
@@ -1033,28 +1397,123 @@
 
 
   // ==========================================
-  // 2. 양도소득세 계산 로직
+  // 2. 양도소득세 계산 로직 (개편안 연도별 반영)
   // ==========================================
-  function calculateTransferTaxDetails(sellPrice, buyPrice, expense, deductionRate) {
+  function toggleGainsResidenceRow() {
+      const houseType = document.getElementById('gainsHouseType').value;
+      const residenceRow = document.getElementById('gainsResidenceRow');
+      if (houseType === '1house') {
+          residenceRow.style.display = 'block';
+      } else {
+          residenceRow.style.display = 'none';
+      }
+  }
+
+  function getHoldingAndResidenceYears(targetYear, acquireYear, acquireMonth, resType) {
+      if (acquireYear <= 2016) {
+          const holdY = 10;
+          const resiY = (resType === 'full') ? 10 : Number(resType);
+          return { holdY, resiY };
+      }
+      // targetYear 시점의 보유 만 연수
+      let holdY = Math.max(0, targetYear - acquireYear - (acquireMonth > 11 ? 1 : 0));
+      let resiY = (resType === 'full') ? holdY : Number(resType);
+      return { holdY, resiY };
+  }
+
+  function getLongTermDeductionInfo(isOneHouse, holdingYears, residenceYears, era) {
+      // era: '2026', '2027', '2028', '2029'
+      if (!isOneHouse) {
+          // 일반 과세 (3년 미만 0%, 3년 이상 연 2%씩 최대 30%)
+          let rate = 0;
+          if (holdingYears >= 15) rate = 0.30;
+          else if (holdingYears >= 3) rate = holdingYears * 0.02;
+          return { rate, holdRate: rate, resiRate: 0, cap: Infinity, desc: `일반 장특공 (연 2%, 최대 30%): ${(rate*100).toFixed(0)}%` };
+      }
+
+      // 1세대 1주택이나 거주기간 2년 미만인 경우 일반 장특공 적용
+      if (residenceYears < 2) {
+          let rate = 0;
+          if (holdingYears >= 15) rate = 0.30;
+          else if (holdingYears >= 3) rate = holdingYears * 0.02;
+          return { rate, holdRate: rate, resiRate: 0, cap: Infinity, desc: `거주 2년 미만 일반 공제 (연 2%, 최대 30%): ${(rate*100).toFixed(0)}%` };
+      }
+
+      // 1세대 1주택 (거주 2년 이상)
+      let holdRate = 0;
+      let resiRate = 0;
+      let cap = Infinity;
+      let desc = "";
+
+      if (era === '2026' || era === '2027') {
+          // ~2027년: 보유 연 4% (3년 12% ~ 10년 40%), 거주 연 4% (3년 12% ~ 10년 40%), 최대 80% (한도 없음)
+          holdRate = holdingYears >= 10 ? 0.40 : (holdingYears >= 3 ? holdingYears * 0.04 : 0);
+          resiRate = residenceYears >= 10 ? 0.40 : (residenceYears >= 3 ? residenceYears * 0.04 : 0);
+          cap = Infinity;
+          desc = `보유 ${(holdRate*100).toFixed(0)}% (${holdingYears}년) + 거주 ${(resiRate*100).toFixed(0)}% (${residenceYears}년) = 합산 ${((holdRate+resiRate)*100).toFixed(0)}% (한도 없음)`;
+      } else if (era === '2028') {
+          // 2028년: 보유 연 2% (3년 6% ~ 10년 20%), 거주 연 6% (3년 18% ~ 10년 60%), 최대 80%, 1인당 한도 10억 (공동명의 합산 20억)
+          holdRate = holdingYears >= 10 ? 0.20 : (holdingYears >= 3 ? holdingYears * 0.02 : 0);
+          resiRate = residenceYears >= 10 ? 0.60 : (residenceYears >= 3 ? residenceYears * 0.06 : 0);
+          cap = 1000000000; // 1인당 10억
+          desc = `보유 ${(holdRate*100).toFixed(0)}% (${holdingYears}년) + 거주 ${(resiRate*100).toFixed(0)}% (${residenceYears}년) = 합산 ${((holdRate+resiRate)*100).toFixed(0)}% (1인당 한도 10억)`;
+      } else { // 2029
+          // 2029년 이후: 보유공제 폐지 (0%), 거주 연 8% (3년 24% ~ 10년 80%), 최대 80%, 1인당 한도 5억 (공동명의 합산 10억)
+          holdRate = 0;
+          resiRate = residenceYears >= 10 ? 0.80 : (residenceYears >= 3 ? residenceYears * 0.08 : 0);
+          cap = 500000000; // 1인당 5억
+          desc = `거주 ${(resiRate*100).toFixed(0)}% (${residenceYears}년) = 합산 ${(resiRate*100).toFixed(0)}% (보유공제 폐지, 1인당 한도 5억)`;
+      }
+
+      let totalRate = Math.min(0.80, holdRate + resiRate);
+      return { rate: totalRate, holdRate, resiRate, cap, desc };
+  }
+
+  function calculateTransferTaxDetailsForEra(sellPrice, buyPrice, expense, isOneHouse, isJoint, holdingYears, residenceYears, era) {
       sellPrice = Math.max(0, Number(sellPrice) || 0);
       buyPrice = Math.max(0, Number(buyPrice) || 0);
       expense = Math.max(0, Number(expense) || 0);
-      deductionRate = Math.max(0, Number(deductionRate) || 0);
 
-      // 1. 양도차익 = 양도가액 - 취득가액 - 필요경비
+      // 1. 총 양도차익 = 양도가액 - 취득가액 - 필요경비
       let capitalGain = Math.max(0, sellPrice - buyPrice - expense);
 
-      // 2. 장기보유특별공제
-      let longTermDeduction = Math.round(capitalGain * deductionRate);
+      // 2. 1세대 1주택 과세 대상 양도차익 (12억 초과분 안분 비율 적용)
+      let taxableGain = 0;
+      let nonTaxableRatio = 0;
+      let taxableRatio = 1;
 
-      // 3. 양도소득금액 = 양도차익 - 장기보유특별공제
-      let incomeAmount = Math.max(0, capitalGain - longTermDeduction);
+      if (isOneHouse) {
+          if (sellPrice <= 1200000000) {
+              taxableGain = 0;
+              taxableRatio = 0;
+              nonTaxableRatio = 1;
+          } else {
+              taxableRatio = (sellPrice - 1200000000) / sellPrice;
+              nonTaxableRatio = 1200000000 / sellPrice;
+              taxableGain = Math.round(capitalGain * taxableRatio);
+          }
+      } else {
+          taxableGain = capitalGain;
+          taxableRatio = 1;
+      }
 
-      // 4. 과세표준 = 양도소득금액 - 기본공제 (250만원)
+      // 3. 인별 과세 대상 양도차익 (명의 분할)
+      const ownershipRatio = isJoint ? 0.5 : 1.0;
+      let perPersonTaxableGain = Math.round(taxableGain * ownershipRatio);
+
+      // 4. 연도별 장기보유특별공제 및 과세표준
+      const deductionInfo = getLongTermDeductionInfo(isOneHouse, holdingYears, residenceYears, era);
+      let rawDeduction = Math.round(perPersonTaxableGain * deductionInfo.rate);
+      let deductionAmount = Math.min(rawDeduction, deductionInfo.cap);
+
+      // 양도소득금액 = 인별 과세 대상 양도차익 - 공제액
+      let incomeAmount = Math.max(0, perPersonTaxableGain - deductionAmount);
+
+      // 과세표준 = 양도소득금액 - 기본공제 (250만원)
       const basicDeduction = 2500000;
       let taxBase = Math.max(0, incomeAmount - basicDeduction);
 
-      // 5. 세율 및 누진공제 산출 (일반과세 8단계 과세표준)
+      // 5. 기본세율 (6%~45%) 및 누진공제 산출
       let rate = 0;
       let progressiveDeduction = 0;
       let tierInfo = "";
@@ -1068,13 +1527,13 @@
           tierInfo = "1,400만원 이하 (세율 6%)";
           formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 6%)`;
       } else if (taxBase <= 50000000) {
-          rate = 0.15; progressiveDeduction = 1080000;
-          tierInfo = "1,400만 ~ 5,000만원 이하 (세율 15%, 누진공제 108만원)";
-          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 15%) - 108만원`;
+          rate = 0.15; progressiveDeduction = 1260000;
+          tierInfo = "1,400만 ~ 5,000만원 이하 (세율 15%, 누진공제 126만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 15%) - 126만원`;
       } else if (taxBase <= 88000000) {
-          rate = 0.24; progressiveDeduction = 5220000;
-          tierInfo = "5,000만 ~ 8,800만원 이하 (세율 24%, 누진공제 522만원)";
-          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 24%) - 522만원`;
+          rate = 0.24; progressiveDeduction = 5760000;
+          tierInfo = "5,000만 ~ 8,800만원 이하 (세율 24%, 누진공제 576만원)";
+          formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 24%) - 576만원`;
       } else if (taxBase <= 150000000) {
           rate = 0.35; progressiveDeduction = 14900000;
           tierInfo = "8,800만 ~ 1.5억원 이하 (세율 35%, 누진공제 1,490만원)";
@@ -1097,22 +1556,29 @@
           formulaText = `(과세표준 ${formatKoreanText(taxBase)} × 45%) - 6,540만원`;
       }
 
-      // 6. 산출세액 = (과세표준 × 세율) - 누진공제
-      let mainTax = Math.max(0, Math.round((taxBase * rate) - progressiveDeduction));
+      // 1인당 산출세액 (본세)
+      let perPersonMainTax = Math.max(0, Math.round((taxBase * rate) - progressiveDeduction));
 
-      // 7. 지방소득세 = 산출세액의 10%
-      let localTax = Math.round(mainTax * 0.1);
+      // 1인당 지방소득세 (10%)
+      let perPersonLocalTax = Math.round(perPersonMainTax * 0.1);
 
-      // 8. 총 예상 납부액
-      let totalTax = mainTax + localTax;
+      // 최종 납부세액 (공동명의 2인 합산 vs 단독 1인)
+      let peopleCount = isJoint ? 2 : 1;
+      let totalTax = (perPersonMainTax + perPersonLocalTax) * peopleCount;
 
       return {
           sellPrice,
           buyPrice,
           expense,
           capitalGain,
-          deductionRate,
-          longTermDeduction,
+          isOneHouse,
+          taxableGain,
+          taxableRatio,
+          isJoint,
+          ownershipRatio,
+          perPersonTaxableGain,
+          deductionInfo,
+          deductionAmount,
           incomeAmount,
           basicDeduction,
           taxBase,
@@ -1120,8 +1586,9 @@
           progressiveDeduction,
           tierInfo,
           formulaText,
-          mainTax,
-          localTax,
+          perPersonMainTax,
+          perPersonLocalTax,
+          peopleCount,
           totalTax
       };
   }
@@ -1134,62 +1601,106 @@
 
   function updateGainsPresetActive(value) {
       const buttons = document.querySelectorAll('#gainsCalcSection .preset-btn');
+      const numVal = parseFloat(value);
       buttons.forEach(btn => {
-          const btnVal = parseInt(btn.getAttribute('onclick').match(/\d+/)[0]);
-          if (btnVal === parseInt(value)) {
-              btn.classList.add('active');
-          } else {
-              btn.classList.remove('active');
+          const match = btn.getAttribute('onclick').match(/[\d.]+/);
+          if (match) {
+              const btnVal = parseFloat(match[0]);
+              if (!isNaN(numVal) && Math.abs(btnVal - numVal) < 0.001) {
+                  btn.classList.add('active');
+              } else {
+                  btn.classList.remove('active');
+              }
           }
       });
   }
 
+  function updateGainsCardUI(prefix, res) {
+      // 요약 정보
+      document.getElementById(`${prefix}CapitalGain`).innerText = formatWon(res.capitalGain);
+      document.getElementById(`${prefix}TaxableGain`).innerText = formatWon(res.taxableGain);
+      document.getElementById(`${prefix}PerPersonGain`).innerText = formatWon(res.perPersonTaxableGain);
+      document.getElementById(`${prefix}Deduction`).innerText = formatWon(res.deductionAmount);
+      document.getElementById(`${prefix}TaxBase`).innerText = formatWon(res.taxBase);
+      document.getElementById(`${prefix}MainTax`).innerText = formatWon(res.perPersonMainTax);
+      document.getElementById(`${prefix}TotalTax`).innerText = formatWon(res.totalTax);
+
+      // 상세 5단계 산출과정
+      // Step 1
+      document.getElementById(`${prefix}S1Sell`).innerText = formatWon(res.sellPrice);
+      document.getElementById(`${prefix}S1Buy`).innerText = formatWon(res.buyPrice);
+      document.getElementById(`${prefix}S1Exp`).innerText = formatWon(res.expense);
+      document.getElementById(`${prefix}S1Gain`).innerText = formatWon(res.capitalGain) + ` (${formatKoreanText(res.capitalGain)})`;
+
+      // Step 2
+      document.getElementById(`${prefix}S2Sell`).innerText = formatWon(res.capitalGain);
+      document.getElementById(`${prefix}S2Ratio`).innerText = res.isOneHouse 
+          ? (res.sellPrice > 1200000000 ? `(양도가액 ${formatKoreanText(res.sellPrice)} - 12억) ÷ ${formatKoreanText(res.sellPrice)} = ${(res.taxableRatio * 100).toFixed(1)}%` : "12억 이하 전액 비과세 0%") 
+          : "일반 과세 100%";
+      document.getElementById(`${prefix}S2Taxable`).innerText = formatWon(res.taxableGain) + ` (${formatKoreanText(res.taxableGain)})`;
+
+      // Step 3
+      document.getElementById(`${prefix}S3Ratio`).innerText = res.isJoint ? "50% (부부 공동명의)" : "100% (단독명의)";
+      document.getElementById(`${prefix}S3PerPerson`).innerText = formatWon(res.perPersonTaxableGain) + ` (${formatKoreanText(res.perPersonTaxableGain)})`;
+
+      // Step 4
+      document.getElementById(`${prefix}S4DeductionDesc`).innerText = res.deductionInfo.desc;
+      document.getElementById(`${prefix}S4Deduction`).innerText = formatWon(res.deductionAmount);
+      document.getElementById(`${prefix}S4TaxBase`).innerText = formatWon(res.taxBase) + ` (${formatKoreanText(res.taxBase)})`;
+
+      // Step 5
+      document.getElementById(`${prefix}S5Tier`).innerText = res.tierInfo;
+      document.getElementById(`${prefix}S5Formula`).innerText = res.formulaText;
+      document.getElementById(`${prefix}S5Main`).innerText = formatWon(res.perPersonMainTax);
+      document.getElementById(`${prefix}S5Local`).innerText = formatWon(res.perPersonLocalTax);
+      document.getElementById(`${prefix}S5Final`).innerText = formatWon(res.totalTax) + ` (${formatKoreanText(res.totalTax)})` + (res.isJoint ? " [2명 합산]" : "");
+  }
+
   function updateGainsTaxUI() {
-      const sellPrice = Number(document.getElementById('sellPrice').value);
-      const buyPrice = Number(document.getElementById('buyPrice').value);
-      const expense = Number(document.getElementById('expense').value);
-      const deductionRate = Number(document.getElementById('holdingYears').value);
+      const sellPriceEok = parseFloat(document.getElementById('sellPrice').value) || 0;
+      const buyPriceEok = parseFloat(document.getElementById('buyPrice').value) || 0;
+      const expenseMan = parseFloat(document.getElementById('expense').value) || 0;
 
-      // 입력된 금액 실시간 텍스트 표시
-      document.getElementById('sellPriceDisplay').innerHTML = `${Math.round(sellPrice).toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(sellPrice)})</span>`;
-      document.getElementById('buyPriceDisplay').innerHTML = `${Math.round(buyPrice).toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(buyPrice)})</span>`;
-      document.getElementById('expenseDisplay').innerHTML = `${Math.round(expense).toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(expense)})</span>`;
+      // 억 단위 -> 원 단위 환산 (1억 = 100,000,000)
+      const sellPrice = Math.round(sellPriceEok * 100000000);
+      const buyPrice = Math.round(buyPriceEok * 100000000);
+      // 만원 단위 -> 원 단위 환산 (1만 = 10,000)
+      const expense = Math.round(expenseMan * 10000);
+      
+      const houseType = document.getElementById('gainsHouseType').value;
+      const isOneHouse = (houseType === '1house');
 
-      updateGainsPresetActive(sellPrice);
+      const ownershipType = document.getElementById('gainsOwnershipType').value;
+      const isJoint = (ownershipType === 'joint');
 
-      const g = calculateTransferTaxDetails(sellPrice, buyPrice, expense, deductionRate);
+      const acquireYear = Number(document.getElementById('acquireYear').value);
+      const acquireMonth = Number(document.getElementById('acquireMonth').value);
+      const resType = document.getElementById('gainsResidenceType').value;
 
-      // 요약 카드 대입
-      document.getElementById('gainsCapitalGain').innerText = formatWon(g.capitalGain);
-      document.getElementById('gainsLongTermDeduction').innerText = formatWon(g.longTermDeduction);
-      document.getElementById('gainsTaxBase').innerText = formatWon(g.taxBase);
-      document.getElementById('gainsTaxRate').innerText = (g.rate * 100).toFixed(0) + " %";
-      document.getElementById('gainsMainTax').innerText = formatWon(g.mainTax);
-      document.getElementById('gainsLocalTax').innerText = formatWon(g.localTax);
-      document.getElementById('gainsTotalTax').innerText = formatWon(g.totalTax);
+      // 실시간 입력금액 텍스트 표시
+      document.getElementById('sellPriceDisplay').innerHTML = `${sellPrice.toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(sellPrice)})</span>`;
+      document.getElementById('buyPriceDisplay').innerHTML = `${buyPrice.toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(buyPrice)})</span>`;
+      document.getElementById('expenseDisplay').innerHTML = `${expense.toLocaleString('ko-KR')} 원 <span class="readable">(${formatKoreanText(expense)})</span>`;
 
-      // 상세 산출 과정 대입
-      document.getElementById('gainsStep1Sell').innerText = formatWon(g.sellPrice);
-      document.getElementById('gainsStep1Buy').innerText = formatWon(g.buyPrice);
-      document.getElementById('gainsStep1Exp').innerText = formatWon(g.expense);
-      document.getElementById('gainsStep1Gain').innerText = formatWon(g.capitalGain) + ` (${formatKoreanText(g.capitalGain)})`;
+      updateGainsPresetActive(sellPriceEok);
+      toggleGainsResidenceRow();
 
-      document.getElementById('gainsStep2Gain').innerText = formatWon(g.capitalGain);
-      document.getElementById('gainsStep2Rate').innerText = (g.deductionRate * 100).toFixed(0) + "%";
-      document.getElementById('gainsStep2Deduction').innerText = formatWon(g.longTermDeduction) + ` (${formatKoreanText(g.longTermDeduction)})`;
+      // 연도별(2026, 2027, 2028, 2029) 보유/거주 기간 산정
+      const y26 = getHoldingAndResidenceYears(2026, acquireYear, acquireMonth, resType);
+      const y27 = getHoldingAndResidenceYears(2027, acquireYear, acquireMonth, resType);
+      const y28 = getHoldingAndResidenceYears(2028, acquireYear, acquireMonth, resType);
+      const y29 = getHoldingAndResidenceYears(2029, acquireYear, acquireMonth, resType);
 
-      document.getElementById('gainsStep3Gain').innerText = formatWon(g.capitalGain);
-      document.getElementById('gainsStep3LongDeduction').innerText = formatWon(g.longTermDeduction);
-      document.getElementById('gainsStep3Income').innerText = formatWon(g.incomeAmount);
-      document.getElementById('gainsStep3TaxBase').innerText = formatWon(g.taxBase) + ` (${formatKoreanText(g.taxBase)})`;
+      // 연도별 계산실행 (2026년, 2027년, 2028년, 2029년 이후)
+      const res26 = calculateTransferTaxDetailsForEra(sellPrice, buyPrice, expense, isOneHouse, isJoint, y26.holdY, y26.resiY, '2026');
+      const res27 = calculateTransferTaxDetailsForEra(sellPrice, buyPrice, expense, isOneHouse, isJoint, y27.holdY, y27.resiY, '2027');
+      const res28 = calculateTransferTaxDetailsForEra(sellPrice, buyPrice, expense, isOneHouse, isJoint, y28.holdY, y28.resiY, '2028');
+      const res29 = calculateTransferTaxDetailsForEra(sellPrice, buyPrice, expense, isOneHouse, isJoint, y29.holdY, y29.resiY, '2029');
 
-      document.getElementById('gainsStep4Tier').innerText = g.tierInfo;
-      document.getElementById('gainsStep4Formula').innerText = g.formulaText;
-      document.getElementById('gainsStep4MainTax').innerText = formatWon(g.mainTax) + ` (${formatKoreanText(g.mainTax)})`;
-
-      document.getElementById('gainsStep5Main').innerText = formatWon(g.mainTax);
-      document.getElementById('gainsStep5Local').innerText = formatWon(g.localTax);
-      document.getElementById('gainsStep5Total').innerText = formatWon(g.totalTax) + ` (${formatKoreanText(g.totalTax)})`;
+      updateGainsCardUI('gains26', res26);
+      updateGainsCardUI('gains27', res27);
+      updateGainsCardUI('gains28', res28);
+      updateGainsCardUI('gains29', res29);
   }
 
   // --- 이벤트 리스너 및 초기화 ---
