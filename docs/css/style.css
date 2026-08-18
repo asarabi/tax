@@ -1,0 +1,426 @@
+:root {
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --accent-red: #ef4444;
+    --accent-blue: #3b82f6;
+    --border-color: #e2e8f0;
+    --box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg-gradient);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.container {
+    width: 100%;
+    max-width: 760px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: var(--box-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* 탭 스위처 */
+.tab-nav {
+    display: flex;
+    background-color: #f1f5f9;
+    padding: 5px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    gap: 6px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #64748b;
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tab-btn:hover {
+    color: #1e293b;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.tab-btn.active {
+    background: #ffffff;
+    color: var(--primary);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 26px;
+}
+
+.header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.header .badge {
+    display: inline-block;
+    background-color: #eff6ff;
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    margin-bottom: 10px;
+    border: 1px solid #bfdbfe;
+}
+
+.header p {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.notice-box {
+    background-color: #fffbe6;
+    border: 1px solid #ffe58f;
+    color: #d48806;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+/* 컨트롤 영역 */
+.control-group {
+    background-color: #f8fafc;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 28px;
+}
+
+.form-row {
+    margin-bottom: 18px;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.label-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.input-title {
+    font-weight: 600;
+    font-size: 0.98rem;
+    color: var(--text-main);
+}
+
+.input-display {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.input-display .readable {
+    font-size: 0.9rem;
+    color: #475569;
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: #cbd5e1;
+    outline: none;
+    cursor: pointer;
+    accent-color: var(--primary);
+    margin-bottom: 12px;
+}
+
+input[type="number"], select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    color: var(--text-main);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input[type="number"]:focus, select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-wrapper input[type="number"] {
+    padding-right: 68px;
+}
+
+.input-wrapper .unit-badge {
+    position: absolute;
+    right: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #64748b;
+    pointer-events: none;
+    background: #f1f5f9;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Preset Buttons */
+.preset-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.preset-btn {
+    flex: 1;
+    min-width: 55px;
+    padding: 7px 10px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+.preset-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* 결과 카드 스타일 */
+.result-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.result-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.year-tag {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.tag-gray { background: #e2e8f0; color: #475569; }
+.tag-blue { background: #dbeafe; color: #1e40af; }
+.tag-purple { background: #f3e8ff; color: #6b21a8; }
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.summary-row.total-row {
+    border-top: 2px dashed #e2e8f0;
+    margin-top: 10px;
+    padding-top: 14px;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.summary-row .val {
+    font-weight: 600;
+}
+
+.summary-row.total-row .val {
+    color: var(--accent-red);
+    font-size: 1.25rem;
+}
+
+/* Collapsible details styling */
+details {
+    margin-top: 14px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 12px;
+}
+
+summary {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: #f0f9ff;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+summary:hover {
+    background-color: #e0f2fe;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+.breakdown-box {
+    margin-top: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 0.88rem;
+}
+
+.breakdown-step {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.breakdown-step:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.step-num {
+    display: inline-block;
+    background: #cbd5e1;
+    color: #1e293b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.step-title {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.formula-text {
+    color: #64748b;
+    margin-top: 4px;
+    font-family: monospace, sans-serif;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    background: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    word-break: break-all;
+}
+
+.formula-text .highlight {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+    .header h1 {
+        font-size: 1.45rem;
+    }
+    .tab-btn {
+        font-size: 0.88rem;
+        padding: 10px 8px;
+    }
+    .summary-row.total-row {
+        font-size: 1.05rem;
+    }
+    .summary-row.total-row .val {
+        font-size: 1.15rem;
+    }
+}
